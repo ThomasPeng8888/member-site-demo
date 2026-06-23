@@ -1,0 +1,97 @@
+{% extends "pages/base.html" %}
+
+{% block title %}會員中心｜Aqua Member{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="welcome-panel">
+        <div>
+            <p class="eyebrow">Member Dashboard</p>
+            <h1>嗨，Thomas！今天想看看哪一片海？</h1>
+            <p class="muted">這裡會顯示會員點數、票券、活動與專屬優惠。</p>
+        </div>
+
+        <a href="{% url 'rewards' %}" class="btn btn-primary">查看優惠</a>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <span>⭐</span>
+            <p>目前點數</p>
+            <strong>1,280</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>🎟️</span>
+            <p>可用票券</p>
+            <strong>3 張</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>🐬</span>
+            <p>會員等級</p>
+            <strong>Silver</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>🎁</span>
+            <p>可用優惠</p>
+            <strong>5 個</strong>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="panel">
+            <h2>近期活動</h2>
+
+            <div class="activity-item">
+                <span>🐧</span>
+                <div>
+                    <strong>企鵝餵食秀</strong>
+                    <p>週六 14:30 ・ 會員優先入場</p>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <span>🌙</span>
+                <div>
+                    <strong>夜宿水族館</strong>
+                    <p>本月限定 ・ Silver 會員 9 折</p>
+                </div>
+            </div>
+
+            <div class="activity-item">
+                <span>🐢</span>
+                <div>
+                    <strong>海龜保育講座</strong>
+                    <p>報名即可獲得 100 點</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>會員資料</h2>
+
+            <div class="profile-row">
+                <span>姓名</span>
+                <strong>Thomas</strong>
+            </div>
+
+            <div class="profile-row">
+                <span>Email</span>
+                <strong>demo@example.com</strong>
+            </div>
+
+            <div class="profile-row">
+                <span>手機</span>
+                <strong>0912-345-678</strong>
+            </div>
+
+            <div class="profile-row">
+                <span>LINE 綁定</span>
+                <strong class="success">尚未綁定</strong>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "pages/base.html" %}
+
+{% block title %}Aqua Member｜水族館會員網站{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-text">
+        <p class="eyebrow">Aquarium Membership</p>
+        <h1>把水族館的每一次拜訪，變成一段舒服的小旅行。</h1>
+        <p class="hero-desc">
+            加入 Aqua Member，累積點數、查看票券、收到專屬活動通知，
+            也能用 LINE 快速查詢會員資訊。
+        </p>
+
+        <div class="hero-actions">
+            <a href="{% url 'register' %}" class="btn btn-primary">免費加入會員</a>
+            <a href="{% url 'login' %}" class="btn btn-secondary">會員登入</a>
+        </div>
+
+        <div class="hero-stats">
+            <div>
+                <strong>3,200+</strong>
+                <span>會員加入</span>
+            </div>
+            <div>
+                <strong>12</strong>
+                <span>每月活動</span>
+            </div>
+            <div>
+                <strong>98%</strong>
+                <span>滿意回訪</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-card">
+        <div class="aquarium-card">
+            <div class="fish fish-a">🐟</div>
+            <div class="fish fish-b">🐠</div>
+            <div class="fish fish-c">🐡</div>
+            <div class="water-line"></div>
+            <div class="card-content">
+                <span class="card-label">Today Pass</span>
+                <h2>海洋探索會員卡</h2>
+                <p>點數 1,280 ・ 等級 Silver</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="section-title">
+        <p>Member Benefits</p>
+        <h2>會員可以做什麼？</h2>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <span>🎟️</span>
+            <h3>票券管理</h3>
+            <p>查看尚未使用的門票、活動票券與入場紀錄。</p>
+        </div>
+
+        <div class="feature-card">
+            <span>⭐</span>
+            <h3>點數累積</h3>
+            <p>每次消費與參加活動都能累積會員點數。</p>
+        </div>
+
+        <div class="feature-card">
+            <span>🐬</span>
+            <h3>活動通知</h3>
+            <p>收到餵食秀、夜宿水族館與親子活動提醒。</p>
+        </div>
+
+        <div class="feature-card">
+            <span>💬</span>
+            <h3>LINE 查詢</h3>
+            <p>之後可串接 LINE，一鍵查詢會員資料與優惠。</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

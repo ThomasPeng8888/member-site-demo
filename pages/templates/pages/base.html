@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Aqua Member{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'pages/css/site.css' %}">
+</head>
+<body>
+    <div class="ocean-bg">
+        <div class="bubble bubble-1"></div>
+        <div class="bubble bubble-2"></div>
+        <div class="bubble bubble-3"></div>
+    </div>
+
+    <header class="site-header">
+        <a href="{% url 'home' %}" class="brand">
+            <span class="brand-icon">🐠</span>
+            <span>
+                <strong>Aqua Member</strong>
+                <small>水族館會員中心</small>
+            </span>
+        </a>
+
+        <nav class="nav">
+            <a href="{% url 'home' %}">首頁</a>
+            <a href="{% url 'rewards' %}">會員優惠</a>
+            <a href="{% url 'dashboard' %}">會員中心</a>
+            <a href="{% url 'login' %}" class="nav-button">登入</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2026 Aqua Member. 讓每一次拜訪都像走進海裡一樣放鬆。</p>
+    </footer>
+</body>
+</html>

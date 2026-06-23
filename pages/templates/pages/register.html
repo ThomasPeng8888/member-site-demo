@@ -1,0 +1,42 @@
+{% extends "pages/base.html" %}
+
+{% block title %}加入會員｜Aqua Member{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card">
+        <p class="eyebrow">Join Us</p>
+        <h1>加入 Aqua Member</h1>
+        <p class="muted">建立會員資料，開始累積水族館專屬點數。</p>
+
+        <form class="form">
+            <label>
+                姓名
+                <input type="text" placeholder="請輸入姓名">
+            </label>
+
+            <label>
+                Email
+                <input type="email" placeholder="you@example.com">
+            </label>
+
+            <label>
+                手機
+                <input type="text" placeholder="09xxxxxxxx">
+            </label>
+
+            <label>
+                密碼
+                <input type="password" placeholder="請設定密碼">
+            </label>
+
+            <button type="button" class="btn btn-primary full">建立會員帳號</button>
+        </form>
+
+        <p class="form-footer">
+            已經有帳號？
+            <a href="{% url 'login' %}">前往登入</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "pages/base.html" %}
+
+{% block title %}會員登入｜Aqua Member{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card">
+        <p class="eyebrow">Welcome Back</p>
+        <h1>會員登入</h1>
+        <p class="muted">登入後可以查看點數、票券、優惠與活動紀錄。</p>
+
+        <form class="form">
+            <label>
+                Email
+                <input type="email" placeholder="you@example.com">
+            </label>
+
+            <label>
+                密碼
+                <input type="password" placeholder="請輸入密碼">
+            </label>
+
+            <button type="button" class="btn btn-primary full">登入會員</button>
+        </form>
+
+        <p class="form-footer">
+            還不是會員？
+            <a href="{% url 'register' %}">立即註冊</a>
+        </p>
+    </div>
+</section>
+{% endblock %}
