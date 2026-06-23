@@ -1,6 +1,8 @@
 {% extends "pages/base.html" %}
 
 {% block title %}會員登入｜Aqua Member{% endblock %}
+{% block meta_description %}登入 Aqua Member 水族館會員中心，查看會員點數、票券、優惠與活動紀錄。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
 
 {% block content %}
 <section class="auth-section">
@@ -9,18 +11,42 @@
         <h1>會員登入</h1>
         <p class="muted">登入後可以查看點數、票券、優惠與活動紀錄。</p>
 
-        <form class="form">
+        {% if form.errors %}
+            <div class="alert">
+                Email 或密碼不正確，請再確認一次。
+            </div>
+        {% endif %}
+
+        <form method="post" class="form">
+            {% csrf_token %}
+
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
             <label>
                 Email
-                <input type="email" placeholder="you@example.com">
+                <input
+                    type="email"
+                    name="username"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
             </label>
 
             <label>
                 密碼
-                <input type="password" placeholder="請輸入密碼">
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="請輸入密碼"
+                    autocomplete="current-password"
+                    required
+                >
             </label>
 
-            <button type="button" class="btn btn-primary full">登入會員</button>
+            <button type="submit" class="btn btn-primary full">登入會員</button>
         </form>
 
         <p class="form-footer">

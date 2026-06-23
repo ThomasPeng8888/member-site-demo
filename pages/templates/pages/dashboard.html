@@ -1,14 +1,19 @@
 {% extends "pages/base.html" %}
 
 {% block title %}會員中心｜Aqua Member{% endblock %}
+{% block meta_description %}Aqua Member 會員中心，查看個人會員資料、點數、票券與活動紀錄。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
 
 {% block content %}
 <section class="dashboard">
     <div class="welcome-panel">
         <div>
             <p class="eyebrow">Member Dashboard</p>
-            <h1>嗨，Thomas！今天想看看哪一片海？</h1>
-            <p class="muted">這裡會顯示會員點數、票券、活動與專屬優惠。</p>
+            <h1>嗨，{{ display_name }}！今天想看看哪一片海？</h1>
+            <p class="muted">
+                會員編號：{{ profile.member_no }} ・ 
+                這裡會顯示會員點數、票券、活動與專屬優惠。
+            </p>
         </div>
 
         <a href="{% url 'rewards' %}" class="btn btn-primary">查看優惠</a>
@@ -18,7 +23,7 @@
         <div class="stat-card">
             <span>⭐</span>
             <p>目前點數</p>
-            <strong>1,280</strong>
+            <strong>{{ profile.points }}</strong>
         </div>
 
         <div class="stat-card">
@@ -30,7 +35,7 @@
         <div class="stat-card">
             <span>🐬</span>
             <p>會員等級</p>
-            <strong>Silver</strong>
+            <strong>{{ profile.get_level_display }}</strong>
         </div>
 
         <div class="stat-card">
@@ -44,29 +49,15 @@
         <div class="panel">
             <h2>近期活動</h2>
 
-            <div class="activity-item">
-                <span>🐧</span>
-                <div>
-                    <strong>企鵝餵食秀</strong>
-                    <p>週六 14:30 ・ 會員優先入場</p>
+            {% for activity in activities %}
+                <div class="activity-item">
+                    <span>{{ activity.icon }}</span>
+                    <div>
+                        <strong>{{ activity.title }}</strong>
+                        <p>{{ activity.desc }}</p>
+                    </div>
                 </div>
-            </div>
-
-            <div class="activity-item">
-                <span>🌙</span>
-                <div>
-                    <strong>夜宿水族館</strong>
-                    <p>本月限定 ・ Silver 會員 9 折</p>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <span>🐢</span>
-                <div>
-                    <strong>海龜保育講座</strong>
-                    <p>報名即可獲得 100 點</p>
-                </div>
-            </div>
+            {% endfor %}
         </div>
 
         <div class="panel">
@@ -74,22 +65,26 @@
 
             <div class="profile-row">
                 <span>姓名</span>
-                <strong>Thomas</strong>
+                <strong>{{ display_name }}</strong>
             </div>
 
             <div class="profile-row">
                 <span>Email</span>
-                <strong>demo@example.com</strong>
+                <strong>{{ user.email }}</strong>
             </div>
 
             <div class="profile-row">
                 <span>手機</span>
-                <strong>0912-345-678</strong>
+                <strong>{{ profile.phone|default:"尚未填寫" }}</strong>
             </div>
 
             <div class="profile-row">
                 <span>LINE 綁定</span>
-                <strong class="success">尚未綁定</strong>
+                {% if profile.line_user_id %}
+                    <strong class="success">已綁定</strong>
+                {% else %}
+                    <strong class="warning">尚未綁定</strong>
+                {% endif %}
             </div>
         </div>
     </div>

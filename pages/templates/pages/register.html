@@ -1,6 +1,8 @@
 {% extends "pages/base.html" %}
 
 {% block title %}加入會員｜Aqua Member{% endblock %}
+{% block meta_description %}加入 Aqua Member 水族館會員，建立會員資料並開始累積點數與專屬優惠。{% endblock %}
+{% block robots %}noindex,follow{% endblock %}
 
 {% block content %}
 <section class="auth-section">
@@ -9,28 +11,85 @@
         <h1>加入 Aqua Member</h1>
         <p class="muted">建立會員資料，開始累積水族館專屬點數。</p>
 
-        <form class="form">
+        <form method="post" class="form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
             <label>
                 姓名
-                <input type="text" placeholder="請輸入姓名">
+                <input
+                    type="text"
+                    name="first_name"
+                    value="{{ form.first_name.value|default:'' }}"
+                    placeholder="請輸入姓名"
+                    required
+                >
+                {% for error in form.first_name.errors %}
+                    <small class="field-error">{{ error }}</small>
+                {% endfor %}
             </label>
 
             <label>
                 Email
-                <input type="email" placeholder="you@example.com">
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ form.email.value|default:'' }}"
+                    placeholder="you@example.com"
+                    required
+                >
+                {% for error in form.email.errors %}
+                    <small class="field-error">{{ error }}</small>
+                {% endfor %}
             </label>
 
             <label>
                 手機
-                <input type="text" placeholder="09xxxxxxxx">
+                <input
+                    type="text"
+                    name="phone"
+                    value="{{ form.phone.value|default:'' }}"
+                    placeholder="09xxxxxxxx"
+                >
+                {% for error in form.phone.errors %}
+                    <small class="field-error">{{ error }}</small>
+                {% endfor %}
             </label>
 
             <label>
                 密碼
-                <input type="password" placeholder="請設定密碼">
+                <input
+                    type="password"
+                    name="password1"
+                    placeholder="請設定密碼"
+                    autocomplete="new-password"
+                    required
+                >
+                {% for error in form.password1.errors %}
+                    <small class="field-error">{{ error }}</small>
+                {% endfor %}
             </label>
 
-            <button type="button" class="btn btn-primary full">建立會員帳號</button>
+            <label>
+                確認密碼
+                <input
+                    type="password"
+                    name="password2"
+                    placeholder="請再次輸入密碼"
+                    autocomplete="new-password"
+                    required
+                >
+                {% for error in form.password2.errors %}
+                    <small class="field-error">{{ error }}</small>
+                {% endfor %}
+            </label>
+
+            <button type="submit" class="btn btn-primary full">建立會員帳號</button>
         </form>
 
         <p class="form-footer">

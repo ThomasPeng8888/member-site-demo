@@ -574,3 +574,210 @@ a {
         height: 420px;
     }
 }
+
+.logout-form {
+    margin: 0;
+}
+
+.nav-link-button {
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    color: #446068;
+    font-size: 15px;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-family: inherit;
+}
+
+.nav-link-button:hover {
+    background: var(--soft);
+    color: var(--primary-dark);
+}
+
+.alert {
+    margin: 18px 0;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgba(255, 116, 116, 0.12);
+    border: 1px solid rgba(255, 116, 116, 0.24);
+    color: #9b2d2d;
+    line-height: 1.6;
+}
+
+.field-error {
+    color: #b84040;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.warning {
+    color: #c47b00;
+}
+
+.skip-link {
+    position: absolute;
+    left: 20px;
+    top: -80px;
+    z-index: 1000;
+    background: var(--primary-dark);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 999px;
+    transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+    top: 16px;
+}
+
+.menu-toggle {
+    display: none;
+    border: 0;
+    background: var(--soft);
+    color: var(--primary-dark);
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (max-width: 900px) {
+    .site-header {
+        width: min(100% - 24px, 1120px);
+        margin-top: 12px;
+        padding: 14px;
+        border-radius: 26px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+    }
+
+    .brand-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+
+    .menu-toggle {
+        display: inline-flex;
+    }
+
+    .nav {
+        grid-column: 1 / -1;
+        width: 100%;
+        display: none;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .nav.is-open {
+        display: flex;
+    }
+
+    .nav a,
+    .nav-link-button,
+    .logout-form {
+        width: 100%;
+    }
+
+    .nav a,
+    .nav-link-button {
+        text-align: left;
+        display: block;
+        padding: 13px 14px;
+    }
+
+    .nav-button {
+        text-align: center !important;
+    }
+
+    .hero {
+        width: min(100% - 24px, 1120px);
+        margin-top: 36px;
+        gap: 30px;
+    }
+
+    .features,
+    .rewards,
+    .dashboard,
+    .site-footer {
+        width: min(100% - 24px, 1120px);
+    }
+
+    .auth-section {
+        width: min(100% - 24px, 520px);
+        margin-top: 40px;
+    }
+
+    .auth-card {
+        padding: 28px 22px;
+    }
+
+    .hero-desc,
+    .muted {
+        font-size: 16px;
+    }
+
+    .aquarium-card {
+        max-width: 420px;
+        margin-inline: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        background:
+            radial-gradient(circle at top left, #d9fbf4 0, transparent 42%),
+            linear-gradient(180deg, #f5fffd 0%, #edf9fb 100%);
+    }
+
+    .brand small {
+        display: none;
+    }
+
+    .hero h1,
+    .auth-card h1,
+    .dashboard h1,
+    .rewards h1 {
+        font-size: 32px;
+        line-height: 1.15;
+    }
+
+    .section-title h2,
+    .section-title h1 {
+        font-size: 30px;
+    }
+
+    .feature-card,
+    .reward-card,
+    .stat-card,
+    .panel {
+        padding: 22px;
+        border-radius: 22px;
+    }
+
+    .welcome-panel {
+        padding: 24px;
+    }
+
+    .profile-row {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .form input {
+        font-size: 16px;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
