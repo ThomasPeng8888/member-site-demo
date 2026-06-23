@@ -67,10 +67,13 @@
 
         <nav class="nav" id="site-nav" data-site-nav aria-label="主選單">
             <a href="{% url 'home' %}">首頁</a>
+            <a href="{% url 'activities' %}">活動資訊</a>
             <a href="{% url 'rewards' %}">會員優惠</a>
 
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}">會員中心</a>
+                <a href="{% url 'tickets' %}">我的票券</a>
+                <a href="{% url 'points' %}">點數紀錄</a>
 
                 <form method="post" action="{% url 'logout' %}" class="logout-form">
                     {% csrf_token %}
@@ -84,6 +87,16 @@
     </header>
 
     <main id="main-content">
+        {% if messages %}
+            <section class="message-wrap" aria-label="系統訊息">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
         {% block content %}{% endblock %}
     </main>
 

@@ -16,7 +16,7 @@
             </p>
         </div>
 
-        <a href="{% url 'rewards' %}" class="btn btn-primary">查看優惠</a>
+        <a href="{% url 'activities' %}" class="btn btn-primary">查看活動</a>
     </div>
 
     <div class="dashboard-grid">
@@ -29,7 +29,7 @@
         <div class="stat-card">
             <span>🎟️</span>
             <p>可用票券</p>
-            <strong>3 張</strong>
+            <strong>{{ available_ticket_count }} 張</strong>
         </div>
 
         <div class="stat-card">
@@ -39,24 +39,29 @@
         </div>
 
         <div class="stat-card">
-            <span>🎁</span>
-            <p>可用優惠</p>
-            <strong>5 個</strong>
+            <span>📌</span>
+            <p>已報名活動</p>
+            <strong>{{ registered_activity_count }} 個</strong>
         </div>
     </div>
 
     <div class="content-grid">
         <div class="panel">
-            <h2>近期活動</h2>
+            <div class="panel-heading">
+                <h2>推薦活動</h2>
+                <a href="{% url 'activities' %}">全部活動</a>
+            </div>
 
-            {% for activity in activities %}
+            {% for activity in upcoming_activities %}
                 <div class="activity-item">
-                    <span>{{ activity.icon }}</span>
+                    <span>{{ activity.image_emoji }}</span>
                     <div>
                         <strong>{{ activity.title }}</strong>
-                        <p>{{ activity.desc }}</p>
+                        <p>{{ activity.starts_at|date:"Y/m/d H:i" }} ・ {{ activity.location }}</p>
                     </div>
                 </div>
+            {% empty %}
+                <p class="muted">目前尚未建立活動。</p>
             {% endfor %}
         </div>
 
@@ -87,6 +92,35 @@
                 {% endif %}
             </div>
         </div>
+    </div>
+
+    <div class="panel point-panel">
+        <div class="panel-heading">
+            <h2>近期點數紀錄</h2>
+            <a href="{% url 'points' %}">全部紀錄</a>
+        </div>
+
+        {% for transaction in recent_transactions %}
+            <div class="point-row">
+                <div>
+                    <strong>{{ transaction.title }}</strong>
+                    <p>{{ transaction.created_at|date:"Y/m/d H:i" }}</p>
+                </div>
+
+                <span class="point-value point-{{ transaction.transaction_type }}">
+                    {% if transaction.transaction_type == "earn" %}
+                        +{{ transaction.points }}
+                    {% elif transaction.transaction_type == "spend" %}
+                        -{{ transaction.points }}
+                    {% else %}
+                        {{ transaction.points }}
+                    {% endif %}
+                    點
+                </span>
+            </div>
+        {% empty %}
+            <p class="muted">目前尚未有點數紀錄。</p>
+        {% endfor %}
     </div>
 </section>
 {% endblock %}

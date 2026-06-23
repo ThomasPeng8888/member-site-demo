@@ -1,7 +1,9 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.utils import timezone
 
+from aquarium.models import Activity, MemberTicket, PointTransaction
 from .forms import MemberSignUpForm
 from .models import MemberProfile
 
@@ -33,23 +35,23 @@ def dashboard(request):
         or request.user.username
     )
 
-    activities = [
-        {
-            "icon": "🐧",
-            "title": "企鵝餵食秀",
-            "desc": "週六 14:30 ・ 會員優先入場",
-        },
-        {
-            "icon": "🌙",
-            "title": "夜宿水族館",
-            "desc": "本月限定 ・ 會員專屬活動",
-        },
-        {
-            "icon": "🐢",
-            "title": "海龜保育講座",
-            "desc": "報名即可獲得 100 點",
-        },
-    ]
+    upcoming_activities = Activity.objects.filter(
+        is_published=True,
+        starts_at__gte=timezone.now(),
+    ).order_by("starts_at")[:3]
+
+    available_ticket_count = MemberTicket.objects.filter(
+        user=request.user,
+        status="available",
+    ).count()
+
+    recent_transactions = PointTransaction.objects.filter(
+        user=request.user,
+    ).order_by("-created_at")[:5]
+
+    registered_activity_count = request.user.activity_registrations.filter(
+        status="registered",
+    ).count()
 
     return render(
         request,
@@ -57,6 +59,9 @@ def dashboard(request):
         {
             "profile": profile,
             "display_name": display_name,
-            "activities": activities,
+            "upcoming_activities": upcoming_activities,
+            "available_ticket_count": available_ticket_count,
+            "recent_transactions": recent_transactions,
+            "registered_activity_count": registered_activity_count,
         },
     )

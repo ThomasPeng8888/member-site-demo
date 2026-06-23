@@ -1,0 +1,77 @@
+{% extends "pages/base.html" %}
+
+{% block title %}{{ activity.title }}｜Aqua Member 水族館活動{% endblock %}
+{% block meta_description %}{{ activity.summary }}{% endblock %}
+{% block og_title %}{{ activity.title }}｜Aqua Member{% endblock %}
+{% block og_description %}{{ activity.summary }}{% endblock %}
+
+{% block content %}
+<section class="activity-detail">
+    <a href="{% url 'activities' %}" class="back-link">← 回活動列表</a>
+
+    <div class="detail-panel">
+        <div class="detail-emoji">{{ activity.image_emoji }}</div>
+
+        <div class="detail-content">
+            <p class="eyebrow">{{ activity.get_category_display }}</p>
+            <h1>{{ activity.title }}</h1>
+            <p class="muted">{{ activity.summary }}</p>
+
+            <div class="detail-meta-grid">
+                <div>
+                    <span>活動時間</span>
+                    <strong>{{ activity.starts_at|date:"Y/m/d H:i" }}</strong>
+                </div>
+
+                <div>
+                    <span>活動地點</span>
+                    <strong>{{ activity.location }}</strong>
+                </div>
+
+                <div>
+                    <span>報名點數</span>
+                    <strong>
+                        {% if activity.points_reward > 0 %}
+                            +{{ activity.points_reward }} 點
+                        {% else %}
+                            無
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>目前報名</span>
+                    <strong>
+                        {{ activity.registration_count }}
+                        {% if activity.max_capacity > 0 %}
+                            / {{ activity.max_capacity }}
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+
+            <div class="detail-description">
+                {{ activity.description|linebreaks }}
+            </div>
+
+            <div class="detail-actions">
+                {% if user.is_authenticated %}
+                    {% if user_registration %}
+                        <button class="btn btn-secondary" type="button" disabled>已報名</button>
+                    {% elif not activity.has_capacity %}
+                        <button class="btn btn-secondary" type="button" disabled>活動已額滿</button>
+                    {% else %}
+                        <form method="post" action="{% url 'join_activity' activity.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">我要報名</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">登入後報名</a>
+                    <a href="{% url 'register' %}" class="btn btn-secondary">加入會員</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

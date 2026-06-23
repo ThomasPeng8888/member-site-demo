@@ -1,0 +1,44 @@
+{% extends "pages/base.html" %}
+
+{% block title %}我的票券｜Aqua Member{% endblock %}
+{% block meta_description %}查看 Aqua Member 會員票券。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="member-list-page">
+    <div class="section-title">
+        <p>Tickets</p>
+        <h1>我的票券</h1>
+        <span>查看尚未使用、已使用與即將到期的票券。</span>
+    </div>
+
+    <div class="ticket-grid">
+        {% for ticket in tickets %}
+            <article class="ticket-card {% if not ticket.is_valid %}is-muted{% endif %}">
+                <div>
+                    <p class="card-kicker">{{ ticket.get_ticket_type_display }}</p>
+                    <h2>{{ ticket.title }}</h2>
+                    <p>票券編號：{{ ticket.ticket_no }}</p>
+                </div>
+
+                <div class="ticket-footer">
+                    <span class="status-pill">{{ ticket.get_status_display }}</span>
+                    <span>
+                        {% if ticket.valid_until %}
+                            有效至 {{ ticket.valid_until|date:"Y/m/d" }}
+                        {% else %}
+                            無期限
+                        {% endif %}
+                    </span>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <span>🎟️</span>
+                <h2>目前沒有票券</h2>
+                <p>未來活動票、優惠票與入場券會顯示在這裡。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

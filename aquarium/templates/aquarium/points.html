@@ -1,0 +1,43 @@
+{% extends "pages/base.html" %}
+
+{% block title %}點數紀錄｜Aqua Member{% endblock %}
+{% block meta_description %}查看 Aqua Member 會員點數累積與使用紀錄。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="member-list-page">
+    <div class="section-title">
+        <p>Points</p>
+        <h1>點數紀錄</h1>
+        <span>每一次累積，都會變成下一次拜訪的驚喜。</span>
+    </div>
+
+    <div class="panel">
+        {% for transaction in transactions %}
+            <div class="point-row">
+                <div>
+                    <strong>{{ transaction.title }}</strong>
+                    <p>{{ transaction.created_at|date:"Y/m/d H:i" }}</p>
+                </div>
+
+                <span class="point-value point-{{ transaction.transaction_type }}">
+                    {% if transaction.transaction_type == "earn" %}
+                        +{{ transaction.points }}
+                    {% elif transaction.transaction_type == "spend" %}
+                        -{{ transaction.points }}
+                    {% else %}
+                        {{ transaction.points }}
+                    {% endif %}
+                    點
+                </span>
+            </div>
+        {% empty %}
+            <div class="empty-state">
+                <span>⭐</span>
+                <h2>目前沒有點數紀錄</h2>
+                <p>報名活動或使用優惠後，點數紀錄會顯示在這裡。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

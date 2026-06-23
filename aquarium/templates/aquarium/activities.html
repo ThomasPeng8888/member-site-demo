@@ -1,0 +1,45 @@
+{% extends "pages/base.html" %}
+
+{% block title %}水族館活動資訊｜Aqua Member{% endblock %}
+{% block meta_description %}查看 Aqua Member 水族館最新活動，包含企鵝餵食秀、夜宿水族館、保育講座與會員限定體驗。{% endblock %}
+{% block og_title %}水族館活動資訊｜Aqua Member{% endblock %}
+{% block og_description %}探索水族館最新活動與會員限定體驗。{% endblock %}
+
+{% block content %}
+<section class="activities-page">
+    <div class="section-title">
+        <p>Activities</p>
+        <h1>水族館活動資訊</h1>
+        <span>挑一個喜歡的活動，讓今天多一點海洋感。</span>
+    </div>
+
+    <div class="activity-grid">
+        {% for activity in activities %}
+            <article class="activity-card">
+                <div class="activity-emoji">{{ activity.image_emoji }}</div>
+                <div>
+                    <p class="card-kicker">{{ activity.get_category_display }}</p>
+                    <h2>{{ activity.title }}</h2>
+                    <p>{{ activity.summary }}</p>
+
+                    <div class="activity-meta">
+                        <span>📍 {{ activity.location }}</span>
+                        <span>🗓️ {{ activity.starts_at|date:"Y/m/d H:i" }}</span>
+                        {% if activity.points_reward > 0 %}
+                            <span>⭐ 報名 +{{ activity.points_reward }} 點</span>
+                        {% endif %}
+                    </div>
+
+                    <a href="{{ activity.get_absolute_url }}" class="btn btn-secondary">查看活動</a>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <span>🐠</span>
+                <h2>目前尚未建立活動</h2>
+                <p>你可以到 Django 後台新增第一個水族館活動。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
