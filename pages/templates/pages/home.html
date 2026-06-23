@@ -11,13 +11,23 @@
         <p class="eyebrow">Aquarium Membership</p>
         <h1>把水族館的每一次拜訪，變成一段舒服的小旅行。</h1>
         <p class="hero-desc">
-            加入 Aqua Member，累積點數、查看票券、收到專屬活動通知，
-            也能用 LINE 快速查詢會員資訊。
+            {% if user.is_authenticated %}
+                歡迎回來，{{ user.first_name|default:user.email|default:user.username }}。
+                你可以查看會員點數、票券、活動報名紀錄與專屬優惠。
+            {% else %}
+                加入 Aqua Member，累積點數、查看票券、收到專屬活動通知，
+                也能用 LINE 快速查詢會員資訊。
+            {% endif %}
         </p>
 
         <div class="hero-actions">
-            <a href="{% url 'register' %}" class="btn btn-primary">免費加入會員</a>
-            <a href="{% url 'login' %}" class="btn btn-secondary">會員登入</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">前往會員中心</a>
+                <a href="{% url 'activities' %}" class="btn btn-secondary">查看活動資訊</a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-primary">免費加入會員</a>
+                <a href="{% url 'login' %}" class="btn btn-secondary">會員登入</a>
+            {% endif %}
         </div>
 
         <div class="hero-stats">
@@ -43,9 +53,15 @@
             <div class="fish fish-c">🐡</div>
             <div class="water-line"></div>
             <div class="card-content">
-                <span class="card-label">Today Pass</span>
-                <h2>海洋探索會員卡</h2>
-                <p>點數 1,280 ・ 等級 Silver</p>
+                {% if user.is_authenticated %}
+                    <span class="card-label">Member Card</span>
+                    <h2>{{ user.first_name|default:user.email|default:user.username }}</h2>
+                    <p>歡迎回到 Aqua Member 會員中心</p>
+                {% else %}
+                    <span class="card-label">Today Pass</span>
+                    <h2>海洋探索會員卡</h2>
+                    <p>加入會員後即可累積點數與票券</p>
+                {% endif %}
             </div>
         </div>
     </div>
