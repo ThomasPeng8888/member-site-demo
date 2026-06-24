@@ -1,3 +1,4 @@
+import logging
 import secrets
 from datetime import timedelta
 
@@ -16,6 +17,8 @@ from members.models import MemberProfile
 from members.permissions import can_access_staff_tools
 
 from .models import LOTTERY_COST_POINTS, LotteryPrize, LotterySpin
+
+logger = logging.getLogger(__name__)
 
 
 def choose_weighted_prize(prizes):
@@ -209,53 +212,82 @@ def redeem_regular_coupon(request):
         messages.error(request, "請輸入兌換碼。")
         return redirect("staff_redeem")
 
-    with transaction.atomic():
-        spin = (
-            LotterySpin.objects
-            .select_for_update()
-            .select_related("user", "prize")
-            .filter(redeem_code__iexact=redeem_code)
-            .first()
+    safe_redirect_url = f"{reverse('staff_redeem')}?code={redeem_code}"
+
+    try:
+        with transaction.atomic():
+            spin = (
+                LotterySpin.objects
+                .select_for_update()
+                .select_related("user", "prize")
+                .filter(redeem_code__iexact=redeem_code)
+                .first()
+            )
+
+            if not spin:
+                messages.error(request, "找不到這張兌換券。")
+                return redirect("staff_redeem")
+
+            safe_redirect_url = f"{reverse('staff_redeem')}?code={spin.redeem_code}"
+
+            if spin.coupon_status == "redeemed":
+                messages.error(request, "這張兌換券已經核銷過了。")
+                return redirect(safe_redirect_url)
+
+            if spin.coupon_status == "void":
+                messages.error(request, "這張兌換券已作廢，無法核銷。")
+                return redirect(safe_redirect_url)
+
+            if spin.is_expired:
+                spin.coupon_status = "expired"
+                spin.save(update_fields=["coupon_status"])
+                messages.error(request, "這張兌換券已過期，無法核銷。")
+                return redirect(safe_redirect_url)
+
+            redeemed_by_name = (
+                request.user.get_full_name()
+                or request.user.email
+                or request.user.username
+                or str(request.user)
+            )[:100]
+
+            spin.coupon_status = "redeemed"
+            spin.redeemed_at = timezone.now()
+            spin.redeemed_by = redeemed_by_name
+            spin.save(
+                update_fields=[
+                    "coupon_status",
+                    "redeemed_at",
+                    "redeemed_by",
+                ]
+            )
+
+        try:
+            push_line_to_user(
+                spin.user,
+                (
+                    "嘎比嘎比孔雀魚獎品核銷通知 ✅\n"
+                    f"獎品：{spin.prize_name}\n"
+                    f"兌換碼：{spin.redeem_code}\n"
+                    f"核銷時間：{spin.redeemed_at:%Y/%m/%d %H:%M}"
+                ),
+            )
+        except Exception:
+            logger.exception(
+                "LINE notification failed after regular coupon redeem. spin_id=%s redeem_code=%s",
+                getattr(spin, "pk", None),
+                redeem_code,
+            )
+
+        messages.success(request, f"核銷成功：{spin.prize_name}")
+        return redirect(safe_redirect_url)
+
+    except Exception:
+        logger.exception(
+            "Regular coupon redeem failed. redeem_code=%s staff_user_id=%s",
+            redeem_code,
+            getattr(request.user, "pk", None),
         )
+        messages.error(request, "核銷時發生系統錯誤，錯誤已記錄，請稍後再試。")
+        return redirect(safe_redirect_url)
 
-        if not spin:
-            messages.error(request, "找不到這張兌換券。")
-            return redirect("staff_redeem")
-
-        if spin.coupon_status == "redeemed":
-            messages.error(request, "這張兌換券已經核銷過了。")
-            return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")
-
-        if spin.coupon_status == "void":
-            messages.error(request, "這張兌換券已作廢，無法核銷。")
-            return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")
-
-        if spin.is_expired:
-            spin.coupon_status = "expired"
-            spin.save(update_fields=["coupon_status"])
-            messages.error(request, "這張兌換券已過期，無法核銷。")
-            return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")
-
-        spin.coupon_status = "redeemed"
-        spin.redeemed_at = timezone.now()
-        spin.redeemed_by = request.user.username or request.user.email
-        spin.save(
-            update_fields=[
-                "coupon_status",
-                "redeemed_at",
-                "redeemed_by",
-            ]
-        )
-
-    push_line_to_user(
-        spin.user,
-        (
-            "嘎比嘎比孔雀魚獎品核銷通知 ✅\n"
-            f"獎品：{spin.prize_name}\n"
-            f"兌換碼：{spin.redeem_code}\n"
-            f"核銷時間：{spin.redeemed_at:%Y/%m/%d %H:%M}"
-        ),
-    )
-
-    messages.success(request, f"核銷成功：{spin.prize_name}")
-    return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")
