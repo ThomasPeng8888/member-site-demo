@@ -1,22 +1,22 @@
 {% extends "pages/base.html" %}
 
-{% block title %}Aqua Member｜水族館會員網站與會員優惠中心{% endblock %}
-{% block meta_description %}加入 Aqua Member 水族館會員，查詢會員點數、票券、活動資訊與專屬優惠，讓每一次參觀都更輕鬆。{% endblock %}
-{% block og_title %}Aqua Member｜水族館會員網站{% endblock %}
-{% block og_description %}水族館會員中心，提供會員註冊、點數查詢、票券管理、活動資訊與會員優惠。{% endblock %}
+{% block title %}嘎比嘎比孔雀魚｜會員網站與抽獎活動{% endblock %}
+{% block meta_description %}加入嘎比嘎比孔雀魚會員中心，累積點數、參加抽獎活動、查看會員優惠與專屬票券。{% endblock %}
+{% block og_title %}嘎比嘎比孔雀魚｜會員中心{% endblock %}
+{% block og_description %}嘎比嘎比孔雀魚會員中心，提供會員點數、抽獎活動、專屬優惠與活動通知。{% endblock %}
 
 {% block content %}
 <section class="hero">
     <div class="hero-text">
         <p class="eyebrow">Aquarium Membership</p>
-        <h1>把水族館的每一次拜訪，變成一段舒服的小旅行。</h1>
+        <h1>把每一次養魚與交流，變成一段有趣的小旅程。</h1>
         <p class="hero-desc">
             {% if user.is_authenticated %}
                 歡迎回來，{{ user.first_name|default:user.email|default:user.username }}。
-                你可以查看會員點數、票券、活動報名紀錄與專屬優惠。
+                你可以查看會員點數、票券、活動紀錄與專屬抽獎。
             {% else %}
-                加入 Aqua Member，累積點數、查看票券、收到專屬活動通知，
-                也能用 LINE 快速查詢會員資訊。
+                加入嘎比嘎比孔雀魚會員中心，累積點數、參加抽獎、查看專屬優惠，
+                未來也能透過 LINE 快速查詢會員資訊。
             {% endif %}
         </p>
 
@@ -56,11 +56,11 @@
                 {% if user.is_authenticated %}
                     <span class="card-label">Member Card</span>
                     <h2>{{ user.first_name|default:user.email|default:user.username }}</h2>
-                    <p>歡迎回到 Aqua Member 會員中心</p>
+                    <p>歡迎回到嘎比嘎比孔雀魚會員中心</p>
                 {% else %}
-                    <span class="card-label">Today Pass</span>
-                    <h2>海洋探索會員卡</h2>
-                    <p>加入會員後即可累積點數與票券</p>
+                    <span class="card-label">Guppy Member</span>
+                    <h2>嘎比嘎比會員卡</h2>
+                    <p>加入會員後即可累積點數與參加抽獎</p>
                 {% endif %}
             </div>
         </div>
