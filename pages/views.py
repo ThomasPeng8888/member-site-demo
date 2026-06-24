@@ -26,6 +26,8 @@ def robots_txt(request):
         "Disallow: /tickets/",
         "Disallow: /points/",
         "Disallow: /my-prizes/",
+        "Disallow: /my-campaigns/",
+        "Disallow: /line/",
         "Disallow: /staff/",
         "Disallow: /lottery/spin/",
         "",
@@ -40,6 +42,7 @@ def sitemap_xml(request):
         {"name": "home", "changefreq": "weekly", "priority": "1.0"},
         {"name": "activities", "changefreq": "weekly", "priority": "0.9"},
         {"name": "lottery", "changefreq": "weekly", "priority": "0.8"},
+        {"name": "campaign_list", "changefreq": "weekly", "priority": "0.8"},
         {"name": "rewards", "changefreq": "weekly", "priority": "0.8"},
     ]
 
@@ -62,6 +65,28 @@ def sitemap_xml(request):
 
         for activity in Activity.objects.filter(is_published=True).only("slug"):
             location = request.build_absolute_uri(activity.get_absolute_url())
+            url_items.append(
+                f"""
+                <url>
+                    <loc>{escape(location)}</loc>
+                    <changefreq>weekly</changefreq>
+                    <priority>0.7</priority>
+                </url>
+                """
+            )
+    except Exception:
+        # Keep sitemap available even during first deployment before migrations.
+        pass
+
+
+    try:
+        from campaigns.models import Campaign
+
+        for campaign in Campaign.objects.filter(
+            publish_flag=True,
+            status__in=["published", "closed", "drawn"],
+        ).only("slug"):
+            location = request.build_absolute_uri(campaign.get_absolute_url())
             url_items.append(
                 f"""
                 <url>

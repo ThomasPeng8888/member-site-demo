@@ -1,0 +1,146 @@
+{% extends "pages/base.html" %}
+
+{% block title %}{{ campaign.campaign_name }}｜活動抽獎管理{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚活動抽獎管理詳細頁。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="staff-page staff-wide-page">
+    <div class="section-title">
+        <p>Campaign Draw</p>
+        <h1>{{ campaign.campaign_name }}</h1>
+        <span>抽出正取與候補名單，管理活動兌換碼與遞補流程。</span>
+    </div>
+
+    <div class="redeem-result-card">
+        <div class="winner-top">
+            <div class="prize-icon">{{ campaign.image_emoji }}</div>
+            <div>
+                <p class="card-kicker">{{ campaign.campaign_id }}</p>
+                <h2>{{ campaign.prize_name }}</h2>
+                <p>{{ campaign.get_status_display }} ・ 報名 {{ campaign.registration_count }} 人</p>
+            </div>
+        </div>
+
+        <div class="redeem-info-grid campaign-admin-grid">
+            <div>
+                <span>報名時間</span>
+                <strong>{{ campaign.register_start_at|date:"Y/m/d H:i" }} - {{ campaign.register_end_at|date:"Y/m/d H:i" }}</strong>
+            </div>
+            <div>
+                <span>抽獎名額</span>
+                <strong>正取 {{ campaign.winner_count }} / 候補 {{ campaign.alternate_count }}</strong>
+            </div>
+            <div>
+                <span>目前有效正取</span>
+                <strong>{{ active_primary_count }} / {{ campaign.winner_count }}</strong>
+            </div>
+            <div>
+                <span>實際抽獎時間</span>
+                <strong>{{ campaign.draw_executed_at|date:"Y/m/d H:i"|default:"尚未抽獎" }}</strong>
+            </div>
+        </div>
+
+        <div class="detail-actions">
+            {% if not campaign.is_drawn and not campaign.winners.exists %}
+                <form method="post" action="{% url 'draw_campaign' campaign.slug %}" onsubmit="return confirm('確定要立即抽出正取與候補名單嗎？抽出後不能重複抽獎。');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">立即抽獎 Draw Now</button>
+                </form>
+            {% else %}
+                <button type="button" class="btn btn-secondary" disabled>已完成抽獎</button>
+            {% endif %}
+            <a href="{% url 'staff_campaign_list' %}" class="btn btn-secondary">返回活動管理</a>
+            <a href="{% url 'staff_campaign_redeem' %}" class="btn btn-secondary">活動獎品核銷</a>
+        </div>
+    </div>
+
+    <div class="panel campaign-section-panel">
+        <div class="panel-heading">
+            <h2>中獎名單</h2>
+            <span class="muted">正取可核銷；候補需等正取名額空出後才能遞補。</span>
+        </div>
+
+        <div class="staff-table-wrap">
+            <table class="staff-table">
+                <thead>
+                    <tr>
+                        <th>類型</th>
+                        <th>順位</th>
+                        <th>會員</th>
+                        <th>狀態</th>
+                        <th>兌換碼</th>
+                        <th>到期</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for winner in winners %}
+                        <tr>
+                            <td>{{ winner.get_winner_type_display }}</td>
+                            <td>#{{ winner.winner_rank }}</td>
+                            <td>{{ winner.user.email|default:winner.user.username }}</td>
+                            <td>{{ winner.get_winner_status_display }}</td>
+                            <td><code>{{ winner.redeem_code }}</code></td>
+                            <td>{{ winner.expire_at|date:"Y/m/d H:i" }}</td>
+                            <td class="table-actions">
+                                <a href="{% url 'staff_campaign_redeem' %}?code={{ winner.redeem_code }}" class="text-link">查詢核銷</a>
+
+                                {% if winner.winner_type == "alternate" and winner.winner_status == "unredeemed" %}
+                                    <form method="post" action="{% url 'promote_alternate' winner.winner_id %}" onsubmit="return confirm('確定要將此候補遞補為正取嗎？');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="link-button">遞補</button>
+                                    </form>
+                                {% endif %}
+
+                                {% if winner.winner_status == "unredeemed" %}
+                                    <form method="post" action="{% url 'void_campaign_winner' winner.winner_id %}" onsubmit="return confirm('確定要作廢此活動兌換資格嗎？');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="link-button danger-link">作廢</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7">目前尚未抽獎。</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel campaign-section-panel">
+        <div class="panel-heading">
+            <h2>報名名單</h2>
+            <span class="muted">最多顯示 200 筆。</span>
+        </div>
+
+        <div class="staff-table-wrap">
+            <table class="staff-table">
+                <thead>
+                    <tr>
+                        <th>會員</th>
+                        <th>狀態</th>
+                        <th>報名時間</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registration in registrations %}
+                        <tr>
+                            <td>{{ registration.user.email|default:registration.user.username }}</td>
+                            <td>{{ registration.get_status_display }}</td>
+                            <td>{{ registration.register_time|date:"Y/m/d H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3">目前尚未有會員報名。</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

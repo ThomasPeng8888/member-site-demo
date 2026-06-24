@@ -1,0 +1,112 @@
+{% extends "pages/base.html" %}
+
+{% block title %}活動獎品核銷｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚活動抽獎獎品核銷頁面。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="staff-page">
+    <div class="section-title">
+        <p>Campaign Redeem</p>
+        <h1>活動獎品核銷</h1>
+        <span>輸入活動中獎兌換碼，確認活動與獎品後完成核銷。</span>
+    </div>
+
+    <div class="staff-panel">
+        <form method="get" class="redeem-search-form">
+            <label>
+                活動兌換碼
+                <input
+                    type="text"
+                    name="code"
+                    value="{{ code }}"
+                    placeholder="例如 CG-ABCD-1234"
+                    autocomplete="off"
+                    required
+                >
+            </label>
+
+            <button type="submit" class="btn btn-primary">查詢活動兌換券</button>
+        </form>
+    </div>
+
+    {% if code and not target_winner %}
+        <div class="empty-state">
+            <span>🔍</span>
+            <h2>查無活動兌換券</h2>
+            <p>請確認會員提供的活動兌換碼是否正確。</p>
+        </div>
+    {% endif %}
+
+    {% if target_winner %}
+        <div class="redeem-result-card {% if not target_winner.can_redeem %}is-muted{% endif %}">
+            <div class="winner-top">
+                <div class="prize-icon">🏆</div>
+
+                <div>
+                    <p class="card-kicker">{{ target_winner.winner_id }}</p>
+                    <h2>{{ target_winner.prize_name }}</h2>
+                    <p>
+                        活動：{{ target_winner.campaign_name }}<br>
+                        會員：{{ target_winner.user.email|default:target_winner.user.username }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="redeem-info-grid">
+                <div>
+                    <span>兌換碼</span>
+                    <strong>{{ target_winner.redeem_code }}</strong>
+                </div>
+
+                <div>
+                    <span>中獎類型</span>
+                    <strong>{{ target_winner.get_winner_type_display }} #{{ target_winner.winner_rank }}</strong>
+                </div>
+
+                <div>
+                    <span>狀態</span>
+                    <strong>{{ target_winner.get_winner_status_display }}</strong>
+                </div>
+
+                <div>
+                    <span>到期時間</span>
+                    <strong>{{ target_winner.expire_at|date:"Y/m/d H:i" }}</strong>
+                </div>
+
+                {% if target_winner.redeemed_at %}
+                    <div>
+                        <span>核銷時間</span>
+                        <strong>{{ target_winner.redeemed_at|date:"Y/m/d H:i" }}</strong>
+                    </div>
+
+                    <div>
+                        <span>核銷人員</span>
+                        <strong>{{ target_winner.redeemed_by|default:"-" }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="detail-actions">
+                {% if target_winner.can_redeem %}
+                    <form method="post" action="{% url 'redeem_campaign_coupon' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="redeem_code" value="{{ target_winner.redeem_code }}">
+                        <button type="submit" class="btn btn-primary">
+                            確認核銷活動獎品
+                        </button>
+                    </form>
+                {% else %}
+                    <button type="button" class="btn btn-secondary" disabled>
+                        此活動兌換券不可核銷
+                    </button>
+                {% endif %}
+
+                <a href="{% url 'staff_campaign_redeem' %}" class="btn btn-secondary">
+                    查詢其他活動兌換碼
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

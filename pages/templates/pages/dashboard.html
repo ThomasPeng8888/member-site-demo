@@ -86,9 +86,17 @@
             <div class="profile-row">
                 <span>LINE 綁定</span>
                 {% if profile.line_user_id %}
-                    <strong class="success">已綁定</strong>
+                    <strong class="success">已綁定{% if profile.line_display_name %}：{{ profile.line_display_name }}{% endif %}</strong>
                 {% else %}
                     <strong class="warning">尚未綁定</strong>
+                {% endif %}
+            </div>
+
+            <div class="detail-actions dashboard-line-actions">
+                {% if profile.line_user_id %}
+                    <a href="{% url 'line_settings' %}" class="btn btn-secondary">管理 LINE 綁定</a>
+                {% else %}
+                    <a href="{% url 'line_bind_start' %}" class="btn btn-primary">立即綁定 LINE</a>
                 {% endif %}
             </div>
         </div>

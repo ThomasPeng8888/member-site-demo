@@ -1,0 +1,91 @@
+{% extends "pages/base.html" %}
+
+{% block title %}LINE 綁定｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚會員 LINE 綁定設定。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="line-settings-page">
+    <div class="section-title">
+        <p>LINE Binding</p>
+        <h1>LINE 綁定</h1>
+        <span>綁定後可透過 LINE 接收點數、抽獎、中獎與核銷通知，也可以直接輸入關鍵字查詢會員資訊。</span>
+    </div>
+
+    <div class="line-card">
+        <div class="line-card-main">
+            {% if profile.line_picture_url %}
+                <img src="{{ profile.line_picture_url }}" alt="LINE 頭像" class="line-avatar">
+            {% else %}
+                <div class="line-avatar-placeholder">LINE</div>
+            {% endif %}
+
+            <div>
+                <p class="card-kicker">目前狀態</p>
+                {% if profile.line_user_id %}
+                    <h2>已綁定 LINE</h2>
+                    <p class="muted">
+                        LINE 名稱：{{ profile.line_display_name|default:"未取得" }}<br>
+                        綁定時間：{{ profile.line_bound_at|date:"Y/m/d H:i" }}<br>
+                        通知狀態：{% if profile.line_notify_enabled %}已開啟{% else %}已暫停{% endif %}
+                    </p>
+                {% else %}
+                    <h2>尚未綁定 LINE</h2>
+                    <p class="muted">請使用你的 LINE 帳號授權綁定嘎比嘎比孔雀魚會員資料。</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="detail-actions line-actions">
+            {% if profile.line_user_id %}
+                <form method="post" action="{% url 'line_toggle_notify' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">
+                        {% if profile.line_notify_enabled %}暫停 LINE 通知{% else %}開啟 LINE 通知{% endif %}
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'line_unbind' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">解除綁定</button>
+                </form>
+            {% else %}
+                {% if line_login_configured %}
+                    <a href="{% url 'line_bind_start' %}" class="btn btn-primary">用 LINE 綁定會員</a>
+                {% else %}
+                    <button type="button" class="btn btn-secondary" disabled>LINE Login 尚未設定</button>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel line-help-panel">
+        <h2>LINE 小幫手可查詢</h2>
+        <div class="line-command-grid">
+            <div>
+                <strong>輸入「點數」</strong>
+                <p>查詢會員編號、會員等級與目前點數。</p>
+            </div>
+            <div>
+                <strong>輸入「獎品」</strong>
+                <p>查詢尚未核銷的一般抽獎獎品。</p>
+            </div>
+            <div>
+                <strong>輸入「活動」</strong>
+                <p>查詢活動抽獎中獎或候補資訊。</p>
+            </div>
+        </div>
+    </div>
+
+    {% if not line_login_configured %}
+        <div class="panel line-help-panel">
+            <h2>管理員設定提醒</h2>
+            <p class="muted">
+                目前尚未設定 LINE Login 環境變數。Render 需要設定
+                <code>LINE_LOGIN_CHANNEL_ID</code>、<code>LINE_LOGIN_CHANNEL_SECRET</code>，
+                callback URL 請填：<code>{{ callback_uri }}</code>
+            </p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

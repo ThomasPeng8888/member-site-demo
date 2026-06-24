@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 
 from aquarium.models import PointTransaction
+from members.line_services import push_line_to_user
 from members.models import MemberProfile
 from members.permissions import can_access_staff_tools
 
@@ -141,6 +142,17 @@ def spin_lottery(request):
             note=f"抽獎編號：{spin.spin_code}，兌換碼：{spin.redeem_code}",
         )
 
+    push_line_to_user(
+        request.user,
+        (
+            "嘎比嘎比孔雀魚抽獎結果 🎁\n"
+            f"恭喜抽中：{prize.prize_name}\n"
+            f"兌換碼：{spin.redeem_code}\n"
+            f"到期時間：{spin.expire_at:%Y/%m/%d %H:%M}\n"
+            f"目前點數：{spin.balance_after} 點"
+        ),
+    )
+
     messages.success(
         request,
         f"恭喜抽中「{prize.prize_name}」！兌換碼已產生，可到我的獎品查看。",
@@ -234,6 +246,16 @@ def redeem_regular_coupon(request):
                 "redeemed_by",
             ]
         )
+
+    push_line_to_user(
+        spin.user,
+        (
+            "嘎比嘎比孔雀魚獎品核銷通知 ✅\n"
+            f"獎品：{spin.prize_name}\n"
+            f"兌換碼：{spin.redeem_code}\n"
+            f"核銷時間：{spin.redeemed_at:%Y/%m/%d %H:%M}"
+        ),
+    )
 
     messages.success(request, f"核銷成功：{spin.prize_name}")
     return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")

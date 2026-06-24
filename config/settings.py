@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "members",
     "aquarium",
     "lottery",
+    "campaigns",
 ]
 
 MIDDLEWARE = [
@@ -141,3 +142,15 @@ LOGOUT_REDIRECT_URL = "home"
 
 # Render / reverse proxy HTTPS support
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Public site URL used for LINE Login callback and LINE message links.
+# Example on Render: https://member-site-demo.onrender.com
+SITE_URL = os.getenv("SITE_URL", "").rstrip("/")
+
+# LINE Login / Messaging API settings. Keep secrets in Render Environment Variables.
+LINE_LOGIN_CHANNEL_ID = os.getenv("LINE_LOGIN_CHANNEL_ID", "")
+LINE_LOGIN_CHANNEL_SECRET = os.getenv("LINE_LOGIN_CHANNEL_SECRET", "")
+LINE_LOGIN_BOT_PROMPT = os.getenv("LINE_LOGIN_BOT_PROMPT", "normal")
+LINE_MESSAGING_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_MESSAGING_CHANNEL_ACCESS_TOKEN", "")
+LINE_WEBHOOK_CHANNEL_SECRET = os.getenv("LINE_WEBHOOK_CHANNEL_SECRET", "")
+

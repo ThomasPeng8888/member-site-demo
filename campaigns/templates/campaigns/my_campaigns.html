@@ -1,0 +1,79 @@
+{% extends "pages/base.html" %}
+
+{% block title %}我的活動抽獎｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}查看嘎比嘎比孔雀魚會員活動抽獎報名與中獎紀錄。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="campaign-page">
+    <div class="section-title">
+        <p>My Campaigns</p>
+        <h1>我的活動抽獎</h1>
+        <span>查看已報名活動、中獎結果與活動兌換碼。</span>
+    </div>
+
+    <div class="panel campaign-section-panel">
+        <div class="panel-heading">
+            <h2>我的中獎紀錄</h2>
+        </div>
+
+        <div class="prize-history-grid">
+            {% for winner in winners %}
+                <article class="winner-card {% if not winner.can_redeem %}is-muted{% endif %}">
+                    <div class="winner-top">
+                        <div class="prize-icon">🏆</div>
+                        <div>
+                            <p class="card-kicker">{{ winner.get_winner_type_display }} #{{ winner.winner_rank }}</p>
+                            <h2>{{ winner.campaign_name }}</h2>
+                            <p>{{ winner.prize_name }}</p>
+                        </div>
+                    </div>
+
+                    {% if winner.winner_type == "primary" %}
+                        <div class="redeem-box">
+                            <span>兌換碼</span>
+                            <strong>{{ winner.redeem_code }}</strong>
+                        </div>
+                    {% endif %}
+
+                    <div class="ticket-footer">
+                        <span class="status-pill">{{ winner.get_winner_status_display }}</span>
+                        <span>到期 {{ winner.expire_at|date:"Y/m/d H:i" }}</span>
+                    </div>
+
+                    {% if winner.winner_type == "primary" and winner.can_redeem %}
+                        <p class="muted">請出示活動兌換碼給店員核銷。</p>
+                    {% elif winner.winner_type == "alternate" %}
+                        <p class="muted">你目前是候補，若遞補為正取後即可使用兌換碼。</p>
+                    {% endif %}
+                </article>
+            {% empty %}
+                <p class="muted">目前尚未有中獎紀錄。</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel campaign-section-panel">
+        <div class="panel-heading">
+            <h2>我的報名紀錄</h2>
+            <a href="{% url 'campaign_list' %}">查看活動抽獎</a>
+        </div>
+
+        {% for registration in registrations %}
+            <div class="point-row">
+                <div>
+                    <strong>{{ registration.campaign.campaign_name }}</strong>
+                    <p>
+                        {{ registration.get_status_display }} ・
+                        報名時間 {{ registration.register_time|date:"Y/m/d H:i" }} ・
+                        獎品 {{ registration.campaign.prize_name }}
+                    </p>
+                </div>
+                <a href="{{ registration.campaign.get_absolute_url }}" class="text-link">查看</a>
+            </div>
+        {% empty %}
+            <p class="muted">目前尚未報名活動抽獎。</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

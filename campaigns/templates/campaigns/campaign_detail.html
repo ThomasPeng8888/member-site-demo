@@ -1,0 +1,94 @@
+{% extends "pages/base.html" %}
+
+{% block title %}{{ campaign.campaign_name }}｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}{{ campaign.campaign_name }}，嘎比嘎比孔雀魚會員活動抽獎。{% endblock %}
+{% block og_title %}{{ campaign.campaign_name }}｜嘎比嘎比孔雀魚{% endblock %}
+{% block og_description %}{{ campaign.campaign_desc|default:"嘎比嘎比孔雀魚會員活動抽獎。"|truncatechars:120 }}{% endblock %}
+
+{% block content %}
+<section class="campaign-page">
+    <div class="campaign-detail-hero">
+        <div>
+            <p class="eyebrow">Campaign Draw</p>
+            <h1>{{ campaign.campaign_name }}</h1>
+            <p class="muted">{{ campaign.campaign_desc|linebreaksbr }}</p>
+
+            <div class="campaign-detail-actions">
+                {% if user.is_authenticated %}
+                    {% if registration and registration.status == "registered" %}
+                        <button type="button" class="btn btn-secondary" disabled>已完成報名</button>
+                    {% elif campaign.registration_is_open %}
+                        <form method="post" action="{% url 'register_campaign' campaign.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">我要報名抽獎</button>
+                        </form>
+                    {% else %}
+                        <button type="button" class="btn btn-secondary" disabled>目前無法報名</button>
+                    {% endif %}
+                    <a href="{% url 'my_campaigns' %}" class="btn btn-secondary">我的活動抽獎</a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">登入後報名</a>
+                    <a href="{% url 'register' %}" class="btn btn-secondary">加入會員</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="campaign-prize-card">
+            <div class="machine-glow">{{ campaign.image_emoji }}</div>
+            <p class="card-kicker">Prize</p>
+            <h2>{{ campaign.prize_name }}</h2>
+            <p>{{ campaign.prize_desc|default:"活動抽獎限定獎品。"|linebreaksbr }}</p>
+        </div>
+    </div>
+
+    <div class="campaign-info-grid">
+        <div>
+            <span>報名時間</span>
+            <strong>{{ campaign.register_start_at|date:"Y/m/d H:i" }} - {{ campaign.register_end_at|date:"Y/m/d H:i" }}</strong>
+        </div>
+        <div>
+            <span>預計抽獎</span>
+            <strong>{{ campaign.draw_at|date:"Y/m/d H:i"|default:"待公告" }}</strong>
+        </div>
+        <div>
+            <span>抽獎名額</span>
+            <strong>正取 {{ campaign.winner_count }}{% if campaign.alternate_count %} / 候補 {{ campaign.alternate_count }}{% endif %}</strong>
+        </div>
+        <div>
+            <span>目前報名</span>
+            <strong>{{ campaign.registration_count }} 人</strong>
+        </div>
+        <div>
+            <span>資格說明</span>
+            <strong>{{ campaign.eligibility_rule|default:"限嘎比嘎比孔雀魚會員報名。" }}</strong>
+        </div>
+        <div>
+            <span>活動狀態</span>
+            <strong>{{ campaign.get_status_display }}</strong>
+        </div>
+    </div>
+
+    {% if winner %}
+        <div class="winner-card campaign-winner-notice {% if not winner.can_redeem %}is-muted{% endif %}">
+            <div class="winner-top">
+                <div class="prize-icon">🏆</div>
+                <div>
+                    <p class="card-kicker">{{ winner.get_winner_type_display }} #{{ winner.winner_rank }}</p>
+                    <h2>{% if winner.winner_type == "primary" %}恭喜中獎{% else %}你是候補名單{% endif %}</h2>
+                    <p>獎品：{{ winner.prize_name }}</p>
+                </div>
+            </div>
+
+            {% if winner.winner_type == "primary" %}
+                <div class="redeem-box">
+                    <span>活動兌換碼</span>
+                    <strong>{{ winner.redeem_code }}</strong>
+                </div>
+                <p class="muted">請在 {{ winner.expire_at|date:"Y/m/d H:i" }} 前出示兌換碼給店員核銷。</p>
+            {% else %}
+                <p class="muted">你目前是候補名單。若正取名額空出，管理員可將候補遞補為正取，屆時此兌換碼即可使用。</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

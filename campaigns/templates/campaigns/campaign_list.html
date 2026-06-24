@@ -1,0 +1,51 @@
+{% extends "pages/base.html" %}
+
+{% block title %}活動抽獎｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚活動抽獎中心，會員可以報名品牌活動抽獎並查看中獎結果。{% endblock %}
+{% block og_title %}活動抽獎｜嘎比嘎比孔雀魚{% endblock %}
+{% block og_description %}加入嘎比嘎比孔雀魚會員活動抽獎，參加品牌限定活動與獎品抽選。{% endblock %}
+
+{% block content %}
+<section class="campaign-page">
+    <div class="section-title">
+        <p>Campaign Draw</p>
+        <h1>嘎比嘎比活動抽獎</h1>
+        <span>報名品牌活動抽獎，抽出專屬會員驚喜與限定獎品。</span>
+    </div>
+
+    <div class="campaign-grid">
+        {% for campaign in campaigns %}
+            <article class="campaign-card">
+                <div class="prize-icon">{{ campaign.image_emoji }}</div>
+                <p class="card-kicker">{{ campaign.campaign_id }}</p>
+                <h2>{{ campaign.campaign_name }}</h2>
+                <p>{{ campaign.campaign_desc|default:"嘎比嘎比孔雀魚會員限定活動抽獎。"|truncatechars:120 }}</p>
+
+                <div class="campaign-meta">
+                    <span>獎品：{{ campaign.prize_name }}</span>
+                    <span>報名：{{ campaign.register_start_at|date:"Y/m/d H:i" }} - {{ campaign.register_end_at|date:"Y/m/d H:i" }}</span>
+                    <span>名額：正取 {{ campaign.winner_count }}{% if campaign.alternate_count %} / 候補 {{ campaign.alternate_count }}{% endif %}</span>
+                    <span>目前報名：{{ campaign.registration_count }}</span>
+                </div>
+
+                <div class="detail-actions">
+                    <a href="{{ campaign.get_absolute_url }}" class="btn btn-primary">查看活動</a>
+                    {% if campaign.registration_is_open %}
+                        <span class="status-pill">報名中</span>
+                    {% elif campaign.is_drawn %}
+                        <span class="status-pill">已抽獎</span>
+                    {% else %}
+                        <span class="status-pill">未開放報名</span>
+                    {% endif %}
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <span>🎉</span>
+                <h2>目前沒有公開活動抽獎</h2>
+                <p>請稍後回來查看嘎比嘎比孔雀魚的最新會員活動。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

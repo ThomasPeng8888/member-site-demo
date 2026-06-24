@@ -1,0 +1,66 @@
+{% extends "pages/base.html" %}
+
+{% block title %}活動抽獎管理｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚活動抽獎管理頁面。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="staff-page staff-wide-page">
+    <div class="section-title">
+        <p>Campaign Staff</p>
+        <h1>活動抽獎管理</h1>
+        <span>管理活動抽獎報名、正取候補與兌換狀態。</span>
+    </div>
+
+    <div class="panel campaign-staff-toolbar">
+        <a href="{% url 'staff_campaign_redeem' %}" class="btn btn-secondary">活動獎品核銷</a>
+        <a href="{% url 'campaign_list' %}" class="btn btn-secondary">前台活動抽獎頁</a>
+        <a href="/admin/campaigns/campaign/" class="btn btn-secondary">Django 後台建立活動</a>
+    </div>
+
+    <div class="campaign-staff-grid">
+        {% for campaign in campaigns %}
+            <article class="campaign-card">
+                <div class="winner-top">
+                    <div class="prize-icon">{{ campaign.image_emoji }}</div>
+                    <div>
+                        <p class="card-kicker">{{ campaign.campaign_id }}</p>
+                        <h2>{{ campaign.campaign_name }}</h2>
+                        <p>{{ campaign.get_status_display }} ・ {% if campaign.publish_flag %}公開{% else %}未公開{% endif %}</p>
+                    </div>
+                </div>
+
+                <div class="campaign-info-grid mini-grid">
+                    <div>
+                        <span>報名人數</span>
+                        <strong>{{ campaign.registration_count }}</strong>
+                    </div>
+                    <div>
+                        <span>正取</span>
+                        <strong>{{ campaign.primary_winner_count }} / {{ campaign.winner_count }}</strong>
+                    </div>
+                    <div>
+                        <span>候補</span>
+                        <strong>{{ campaign.alternate_winner_count }} / {{ campaign.alternate_count }}</strong>
+                    </div>
+                </div>
+
+                <p class="muted">
+                    報名：{{ campaign.register_start_at|date:"Y/m/d H:i" }} - {{ campaign.register_end_at|date:"Y/m/d H:i" }}
+                </p>
+
+                <div class="detail-actions">
+                    <a href="{% url 'staff_campaign_detail' campaign.slug %}" class="btn btn-primary">管理抽獎</a>
+                    <a href="{{ campaign.get_absolute_url }}" class="btn btn-secondary">查看前台</a>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <span>🎉</span>
+                <h2>目前還沒有活動抽獎</h2>
+                <p>請先到 Django 後台建立 Campaign，或執行 seed_campaign_demo 建立 Demo。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

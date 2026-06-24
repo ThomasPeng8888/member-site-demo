@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.utils.crypto import get_random_string
 
 
@@ -43,7 +44,27 @@ class MemberProfile(models.Model):
     line_user_id = models.CharField(
         max_length=100,
         blank=True,
+        db_index=True,
         verbose_name="LINE User ID",
+    )
+    line_display_name = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="LINE 顯示名稱",
+    )
+    line_picture_url = models.URLField(
+        max_length=500,
+        blank=True,
+        verbose_name="LINE 頭像網址",
+    )
+    line_bound_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="LINE 綁定時間",
+    )
+    line_notify_enabled = models.BooleanField(
+        default=True,
+        verbose_name="啟用 LINE 通知",
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -54,5 +75,20 @@ class MemberProfile(models.Model):
         verbose_name="更新時間",
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["line_user_id"],
+                condition=~Q(line_user_id=""),
+                name="unique_non_empty_line_user_id",
+            ),
+        ]
+        verbose_name = "會員資料"
+        verbose_name_plural = "會員資料"
+
     def __str__(self):
         return f"{self.member_no} - {self.user.email or self.user.username}"
+
+    @property
+    def is_line_bound(self):
+        return bool(self.line_user_id)

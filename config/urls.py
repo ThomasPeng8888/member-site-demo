@@ -5,6 +5,7 @@ urlpatterns = [
     path("", include("members.urls")),
     path("", include("aquarium.urls")),
     path("", include("lottery.urls")),
+    path("", include("campaigns.urls")),
     path("", include("pages.urls")),
     path("admin/", admin.site.urls),
 ]

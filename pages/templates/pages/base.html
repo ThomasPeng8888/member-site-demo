@@ -70,16 +70,24 @@
             <a href="{% url 'activities' %}">活動資訊</a>
             <a href="{% url 'rewards' %}">會員優惠</a>
             <a href="{% url 'lottery' %}">會員抽獎</a>
+            <a href="{% url 'campaign_list' %}">活動抽獎</a>
 
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}">會員中心</a>
                 <a href="{% url 'tickets' %}">我的票券</a>
                 <a href="{% url 'my_prizes' %}">我的獎品</a>
+                <a href="{% url 'my_campaigns' %}">我的活動抽獎</a>
                 <a href="{% url 'points' %}">點數紀錄</a>
+                <a href="{% url 'line_settings' %}">LINE 綁定</a>
 
                 {% if can_access_staff_tools %}
                     <a href="{% url 'staff_add_points' %}">店員加點</a>
-                    <a href="{% url 'staff_redeem' %}">店員核銷</a>
+                    <a href="{% url 'staff_redeem' %}">抽獎核銷</a>
+                    <a href="{% url 'staff_campaign_redeem' %}">活動獎品核銷</a>
+                {% endif %}
+
+                {% if can_manage_campaigns %}
+                    <a href="{% url 'staff_campaign_list' %}">活動抽獎管理</a>
                 {% endif %}
 
                 <form method="post" action="{% url 'logout' %}" class="logout-form">

@@ -6,6 +6,7 @@ from django.db.models import F, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from members.line_services import push_line_to_user
 from members.models import MemberProfile
 from members.permissions import can_access_staff_tools
 
@@ -94,6 +95,14 @@ def join_activity(request, slug):
             registration.reward_granted = True
             registration.save(update_fields=["reward_granted"])
 
+    push_line_to_user(
+        request.user,
+        (
+            "嘎比嘎比孔雀魚活動報名成功 🐠\n"
+            f"活動：{activity.title}\n"
+            f"時間：{activity.starts_at:%Y/%m/%d %H:%M}"
+        ),
+    )
     messages.success(request, "報名成功！活動資訊已加入你的會員紀錄。")
     return redirect(activity.get_absolute_url())
 
@@ -214,6 +223,16 @@ def staff_add_points(request):
                     f"{' 備註：' + note if note else ''}"
                 ),
             )
+
+        push_line_to_user(
+            target_user,
+            (
+                "嘎比嘎比孔雀魚消費集點通知 🐠\n"
+                f"本次消費：{purchase_amount} 元\n"
+                f"獲得點數：{earned_points} 點\n"
+                f"目前點數：{target_profile.points} 點"
+            ),
+        )
 
         messages.success(
             request,
