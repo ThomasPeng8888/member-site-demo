@@ -216,10 +216,12 @@ def redeem_regular_coupon(request):
 
     try:
         with transaction.atomic():
+            # PostgreSQL 不允許對 nullable FK 造成的 OUTER JOIN 做 SELECT ... FOR UPDATE。
+            # prize 是 nullable FK，所以這裡只鎖 LotterySpin 本身，避免正式站 500。
             spin = (
                 LotterySpin.objects
                 .select_for_update()
-                .select_related("user", "prize")
+                .select_related("user")
                 .filter(redeem_code__iexact=redeem_code)
                 .first()
             )
