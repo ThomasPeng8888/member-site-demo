@@ -167,15 +167,26 @@ def push_line_message(line_user_id: str, text: str) -> bool:
 
 
 def push_line_to_user(user, text: str) -> bool:
+    """Push a LINE message to a bound member.
+
+    LINE notification is a side effect and must never break the main
+    website flow such as redeeming coupons or adding points.  Therefore
+    every unexpected error is logged and converted to False.
+    """
     try:
         profile = user.member_profile
-    except MemberProfile.DoesNotExist:
-        return False
 
-    if not profile.line_user_id or not profile.line_notify_enabled:
-        return False
+        if not profile.line_user_id or not profile.line_notify_enabled:
+            return False
 
-    return push_line_message(profile.line_user_id, text)
+        return push_line_message(profile.line_user_id, text)
+    except Exception as exc:
+        logger.exception(
+            "LINE push skipped after unexpected error. user_id=%s error=%s",
+            getattr(user, "pk", None),
+            exc,
+        )
+        return False
 
 
 def reply_line_message(reply_token: str, text: str) -> bool:
