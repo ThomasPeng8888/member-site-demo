@@ -1,0 +1,104 @@
+{% extends "pages/base.html" %}
+
+{% block title %}會員抽獎｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚會員可使用點數參加抽獎，兌換專屬優惠與獎品。{% endblock %}
+{% block og_title %}會員抽獎｜嘎比嘎比孔雀魚{% endblock %}
+{% block og_description %}使用會員點數參加嘎比嘎比孔雀魚抽獎活動。{% endblock %}
+
+{% block content %}
+<section class="lottery-page">
+    <div class="lottery-hero">
+        <div>
+            <p class="eyebrow">Guppy Lottery</p>
+            <h1>嘎比嘎比會員抽獎</h1>
+            <p class="muted">
+                每次抽獎消耗 {{ lottery_cost }} 點。抽中後會產生兌換碼，
+                可以在「我的獎品」中查看。
+            </p>
+
+            {% if user.is_authenticated %}
+                <div class="lottery-balance">
+                    <span>目前點數</span>
+                    <strong>{{ profile.points }}</strong>
+                </div>
+
+                <form method="post" action="{% url 'spin_lottery' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        開始抽獎，消耗 {{ lottery_cost }} 點
+                    </button>
+                </form>
+            {% else %}
+                <div class="hero-actions">
+                    <a href="{% url 'login' %}?next={% url 'lottery' %}" class="btn btn-primary">
+                        登入後抽獎
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-secondary">
+                        免費加入會員
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="lottery-machine">
+            <div class="machine-glow">🎰</div>
+            <h2>Guppy Lucky Draw</h2>
+            <p>累積點數，抽出你的專屬小驚喜。</p>
+        </div>
+    </div>
+
+    <div class="section-title">
+        <p>Prizes</p>
+        <h2>目前可抽獎項</h2>
+    </div>
+
+    <div class="prize-grid">
+        {% for prize in prizes %}
+            <article class="prize-card">
+                <div class="prize-icon">{{ prize.image_emoji }}</div>
+                <p class="card-kicker">{{ prize.prize_code }}</p>
+                <h3>{{ prize.prize_name }}</h3>
+                <p>{{ prize.prize_desc|default:"嘎比嘎比孔雀魚會員限定獎項。" }}</p>
+
+                <div class="prize-meta">
+                    <span>權重 {{ prize.weight }}</span>
+                    <span>
+                        {% if prize.stock == None %}
+                            無限庫存
+                        {% else %}
+                            剩餘 {{ prize.stock }}
+                        {% endif %}
+                    </span>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <span>🐠</span>
+                <h2>目前沒有可抽獎項</h2>
+                <p>請到 Django 後台新增獎項，或確認獎項已啟用且有庫存。</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="panel recent-spin-panel">
+            <div class="panel-heading">
+                <h2>最近抽獎紀錄</h2>
+                <a href="{% url 'my_prizes' %}">查看我的獎品</a>
+            </div>
+
+            {% for spin in recent_spins %}
+                <div class="point-row">
+                    <div>
+                        <strong>{{ spin.prize_name }}</strong>
+                        <p>{{ spin.spin_time|date:"Y/m/d H:i" }} ・ {{ spin.get_coupon_status_display }}</p>
+                    </div>
+                    <span class="point-value">-{{ spin.cost_points }} 點</span>
+                </div>
+            {% empty %}
+                <p class="muted">目前尚未抽獎。</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

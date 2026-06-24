@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "pages",
     "members",
     "aquarium",
+    "lottery",
 ]
 
 MIDDLEWARE = [

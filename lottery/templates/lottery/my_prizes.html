@@ -1,0 +1,62 @@
+{% extends "pages/base.html" %}
+
+{% block title %}我的獎品｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}查看嘎比嘎比孔雀魚會員抽獎獎品與兌換碼。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="my-prizes-page">
+    <div class="section-title">
+        <p>My Prizes</p>
+        <h1>我的獎品</h1>
+        <span>查看抽中的獎品、兌換碼與到期時間。</span>
+    </div>
+
+    <div class="prize-history-grid">
+        {% for spin in spins %}
+            <article class="winner-card {% if not spin.can_redeem %}is-muted{% endif %}">
+                <div class="winner-top">
+                    <div class="prize-icon">
+                        {% if spin.prize %}
+                            {{ spin.prize.image_emoji }}
+                        {% else %}
+                            🎁
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <p class="card-kicker">{{ spin.spin_code }}</p>
+                        <h2>{{ spin.prize_name }}</h2>
+                        <p>{{ spin.spin_time|date:"Y/m/d H:i" }}</p>
+                    </div>
+                </div>
+
+                <div class="redeem-box">
+                    <span>兌換碼</span>
+                    <strong>{{ spin.redeem_code }}</strong>
+                </div>
+
+                <div class="ticket-footer">
+                    <span class="status-pill">{{ spin.get_coupon_status_display }}</span>
+                    <span>到期日 {{ spin.expire_at|date:"Y/m/d H:i" }}</span>
+                </div>
+
+                {% if spin.can_redeem %}
+                    <p class="muted">請出示此兌換碼給店員核銷。</p>
+                {% elif spin.coupon_status == "redeemed" %}
+                    <p class="muted">此獎品已於 {{ spin.redeemed_at|date:"Y/m/d H:i" }} 兌換。</p>
+                {% elif spin.is_expired %}
+                    <p class="muted">此兌換券已過期。</p>
+                {% endif %}
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <span>🎁</span>
+                <h2>目前還沒有獎品</h2>
+                <p>前往會員抽獎，用點數抽出你的第一份嘎比嘎比驚喜。</p>
+                <a href="{% url 'lottery' %}" class="btn btn-primary">前往抽獎</a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
