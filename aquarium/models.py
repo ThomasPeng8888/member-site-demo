@@ -42,8 +42,8 @@ class Activity(models.Model):
 
     class Meta:
         ordering = ["starts_at"]
-        verbose_name = "水族館活動"
-        verbose_name_plural = "水族館活動"
+        verbose_name = "嘎比嘎比活動"
+        verbose_name_plural = "嘎比嘎比活動"
 
     def __str__(self):
         return self.title
@@ -89,6 +89,10 @@ class ActivityRegistration(models.Model):
         choices=STATUS_CHOICES,
         default="registered",
         verbose_name="狀態",
+    )
+    reward_granted = models.BooleanField(
+        default=False,
+        verbose_name="報名點數是否已發放",
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="報名時間")
 
@@ -192,7 +196,8 @@ class PointTransaction(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.get_transaction_type_display()} {self.points}"
-    
+
+
 class StaffPointGrant(models.Model):
     member = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -230,4 +235,4 @@ class StaffPointGrant(models.Model):
         verbose_name_plural = "店員加點紀錄"
 
     def __str__(self):
-        return f"{self.member} +{self.earned_points} 點"    
+        return f"{self.member} +{self.earned_points} 點"

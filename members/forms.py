@@ -74,6 +74,6 @@ class MemberSignUpForm(UserCreationForm):
                 transaction_type="earn",
                 points=100,
                 title="新會員註冊禮",
-                note="加入 Aqua Member 自動獲得 100 點。",
+                note="加入嘎比嘎比孔雀魚會員中心自動獲得 100 點。",
             )
         return user

@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from aquarium.models import PointTransaction
 from members.models import MemberProfile
+from members.permissions import can_access_staff_tools
 
 from .models import LOTTERY_COST_POINTS, LotteryPrize, LotterySpin
 
@@ -160,7 +161,7 @@ def my_prizes(request):
     )
 
 def staff_required(user):
-    return user.is_authenticated and user.is_staff
+    return can_access_staff_tools(user)
 
 
 @user_passes_test(staff_required, login_url="login")

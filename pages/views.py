@@ -21,6 +21,13 @@ def robots_txt(request):
         "Disallow: /admin/",
         "Disallow: /dashboard/",
         "Disallow: /login/",
+        "Disallow: /logout/",
+        "Disallow: /register/",
+        "Disallow: /tickets/",
+        "Disallow: /points/",
+        "Disallow: /my-prizes/",
+        "Disallow: /staff/",
+        "Disallow: /lottery/spin/",
         "",
         f"Sitemap: {sitemap_url}",
     ]
@@ -30,23 +37,16 @@ def robots_txt(request):
 
 def sitemap_xml(request):
     public_pages = [
-        {
-            "name": "home",
-            "changefreq": "weekly",
-            "priority": "1.0",
-        },
-        {
-            "name": "rewards",
-            "changefreq": "weekly",
-            "priority": "0.8",
-        },
+        {"name": "home", "changefreq": "weekly", "priority": "1.0"},
+        {"name": "activities", "changefreq": "weekly", "priority": "0.9"},
+        {"name": "lottery", "changefreq": "weekly", "priority": "0.8"},
+        {"name": "rewards", "changefreq": "weekly", "priority": "0.8"},
     ]
 
     url_items = []
 
     for page in public_pages:
         location = request.build_absolute_uri(reverse(page["name"]))
-
         url_items.append(
             f"""
             <url>
@@ -56,6 +56,24 @@ def sitemap_xml(request):
             </url>
             """
         )
+
+    try:
+        from aquarium.models import Activity
+
+        for activity in Activity.objects.filter(is_published=True).only("slug"):
+            location = request.build_absolute_uri(activity.get_absolute_url())
+            url_items.append(
+                f"""
+                <url>
+                    <loc>{escape(location)}</loc>
+                    <changefreq>weekly</changefreq>
+                    <priority>0.7</priority>
+                </url>
+                """
+            )
+    except Exception:
+        # Keep sitemap available even during first deployment before migrations.
+        pass
 
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

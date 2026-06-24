@@ -11,7 +11,6 @@ class LotteryPrizeAdmin(admin.ModelAdmin):
         "prize_name",
         "weight",
         "stock",
-        "points_cost",
         "enabled",
         "sort_order",
         "updated_at",
@@ -19,6 +18,7 @@ class LotteryPrizeAdmin(admin.ModelAdmin):
     list_filter = ("enabled", "created_at")
     search_fields = ("prize_code", "prize_name", "prize_desc")
     ordering = ("sort_order", "id")
+    exclude = ("points_cost",)
 
 
 @admin.register(LotterySpin)

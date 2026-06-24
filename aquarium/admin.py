@@ -27,8 +27,8 @@ class ActivityAdmin(admin.ModelAdmin):
 
 @admin.register(ActivityRegistration)
 class ActivityRegistrationAdmin(admin.ModelAdmin):
-    list_display = ("user", "activity", "status", "created_at")
-    list_filter = ("status", "created_at")
+    list_display = ("user", "activity", "status", "reward_granted", "created_at")
+    list_filter = ("status", "reward_granted", "created_at")
     search_fields = ("user__username", "user__email", "activity__title")
 
 
@@ -58,6 +58,7 @@ class PointTransactionAdmin(admin.ModelAdmin):
     )
     list_filter = ("transaction_type", "created_at")
     search_fields = ("user__username", "user__email", "title", "note")
+
 
 @admin.register(StaffPointGrant)
 class StaffPointGrantAdmin(admin.ModelAdmin):

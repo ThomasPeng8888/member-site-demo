@@ -1,14 +1,13 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.db.models import F
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import transaction
+from django.db.models import F, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
-from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import user_passes_test
-from django.db import transaction
-from django.db.models import Q
 
 from members.models import MemberProfile
+from members.permissions import can_access_staff_tools
 
 from .models import (
     Activity,
@@ -17,6 +16,8 @@ from .models import (
     PointTransaction,
     StaffPointGrant,
 )
+
+POINT_AMOUNT_UNIT = 300
 
 
 def activities(request):
@@ -33,7 +34,6 @@ def activities(request):
 
 def activity_detail(request, slug):
     activity = get_object_or_404(Activity, slug=slug, is_published=True)
-
     user_registration = None
 
     if request.user.is_authenticated:
@@ -58,37 +58,41 @@ def activity_detail(request, slug):
 def join_activity(request, slug):
     activity = get_object_or_404(Activity, slug=slug, is_published=True)
 
-    if not activity.has_capacity:
-        messages.error(request, "這個活動目前已額滿。")
-        return redirect(activity.get_absolute_url())
+    with transaction.atomic():
+        if not activity.has_capacity:
+            messages.error(request, "這個活動目前已額滿。")
+            return redirect(activity.get_absolute_url())
 
-    registration, created = ActivityRegistration.objects.get_or_create(
-        user=request.user,
-        activity=activity,
-        defaults={"status": "registered"},
-    )
-
-    if not created and registration.status == "registered":
-        messages.info(request, "你已經報名過這個活動了。")
-        return redirect(activity.get_absolute_url())
-
-    if not created and registration.status == "cancelled":
-        registration.status = "registered"
-        registration.save(update_fields=["status"])
-
-    if activity.points_reward > 0:
-        profile, _ = MemberProfile.objects.get_or_create(user=request.user)
-        profile.points = F("points") + activity.points_reward
-        profile.save(update_fields=["points"])
-        profile.refresh_from_db()
-
-        PointTransaction.objects.create(
+        registration, created = ActivityRegistration.objects.select_for_update().get_or_create(
             user=request.user,
-            transaction_type="earn",
-            points=activity.points_reward,
-            title=f"報名活動：{activity.title}",
-            note=f"活動報名獲得 {activity.points_reward} 點",
+            activity=activity,
+            defaults={"status": "registered"},
         )
+
+        if not created and registration.status == "registered":
+            messages.info(request, "你已經報名過這個活動了。")
+            return redirect(activity.get_absolute_url())
+
+        if not created and registration.status == "cancelled":
+            registration.status = "registered"
+            registration.save(update_fields=["status"])
+
+        if activity.points_reward > 0 and not registration.reward_granted:
+            profile, _ = MemberProfile.objects.select_for_update().get_or_create(user=request.user)
+            profile.points = F("points") + activity.points_reward
+            profile.save(update_fields=["points", "updated_at"])
+            profile.refresh_from_db()
+
+            PointTransaction.objects.create(
+                user=request.user,
+                transaction_type="earn",
+                points=activity.points_reward,
+                title=f"報名活動：{activity.title}",
+                note=f"活動報名獲得 {activity.points_reward} 點",
+            )
+
+            registration.reward_granted = True
+            registration.save(update_fields=["reward_granted"])
 
     messages.success(request, "報名成功！活動資訊已加入你的會員紀錄。")
     return redirect(activity.get_absolute_url())
@@ -119,11 +123,9 @@ def points(request):
         },
     )
 
-POINT_AMOUNT_UNIT = 300
-
 
 def staff_required(user):
-    return user.is_authenticated and user.is_staff
+    return can_access_staff_tools(user)
 
 
 def find_member_by_keyword(keyword):
@@ -135,7 +137,7 @@ def find_member_by_keyword(keyword):
 
     profile_match = MemberProfile.objects.filter(
         Q(member_no__iexact=keyword)
-        | Q(phone__icontains=keyword)
+        | Q(phone__iexact=keyword)
         | Q(user__email__iexact=keyword)
         | Q(user__username__iexact=keyword)
     ).select_related("user").first()
@@ -153,7 +155,6 @@ def find_member_by_keyword(keyword):
 def staff_add_points(request):
     target_user = None
     target_profile = None
-    preview_points = None
 
     if request.method == "POST":
         keyword = request.POST.get("keyword", "").strip()
@@ -163,7 +164,7 @@ def staff_add_points(request):
         target_user = find_member_by_keyword(keyword)
 
         if not target_user:
-            messages.error(request, "找不到會員，請確認會員編號、Email 或手機是否正確。")
+            messages.error(request, "找不到會員，請確認會員編號、Email 或完整手機是否正確。")
             return redirect("staff_add_points")
 
         try:
@@ -229,7 +230,7 @@ def staff_add_points(request):
         if target_user:
             target_profile, _ = MemberProfile.objects.get_or_create(user=target_user)
         else:
-            messages.error(request, "找不到會員，請確認查詢資料是否正確。")
+            messages.error(request, "找不到會員，請確認會員編號、Email 或完整手機是否正確。")
 
     recent_grants = StaffPointGrant.objects.select_related(
         "member",
@@ -244,6 +245,5 @@ def staff_add_points(request):
             "target_user": target_user,
             "target_profile": target_profile,
             "recent_grants": recent_grants,
-            "preview_points": preview_points,
         },
     )

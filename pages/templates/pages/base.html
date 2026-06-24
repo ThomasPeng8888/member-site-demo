@@ -4,23 +4,23 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>{% block title %}Aqua Member｜水族館會員中心{% endblock %}</title>
+    <title>{% block title %}嘎比嘎比孔雀魚｜會員中心{% endblock %}</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta
         name="description"
-        content="{% block meta_description %}Aqua Member 是水族館會員中心，提供會員註冊、點數查詢、票券管理、活動資訊與會員優惠。{% endblock %}"
+        content="{% block meta_description %}嘎比嘎比孔雀魚會員中心提供會員註冊、點數查詢、票券管理、活動資訊、會員抽獎與專屬優惠。{% endblock %}"
     >
     <meta name="robots" content="{% block robots %}index,follow{% endblock %}">
 
     <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
 
-    <meta property="og:site_name" content="Aqua Member">
+    <meta property="og:site_name" content="嘎比嘎比孔雀魚">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:title" content="{% block og_title %}Aqua Member｜水族館會員中心{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}嘎比嘎比孔雀魚｜會員中心{% endblock %}">
     <meta
         property="og:description"
-        content="{% block og_description %}輕鬆加入水族館會員，查詢點數、票券、活動與專屬優惠。{% endblock %}"
+        content="{% block og_description %}輕鬆加入嘎比嘎比孔雀魚會員，查詢點數、票券、活動、抽獎與專屬優惠。{% endblock %}"
     >
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
 
@@ -28,8 +28,8 @@
     {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "Aqua Member",
-        "description": "水族館會員中心，提供會員註冊、點數查詢、票券管理、活動資訊與會員優惠。",
+        "name": "嘎比嘎比孔雀魚",
+        "description": "嘎比嘎比孔雀魚會員中心，提供會員註冊、點數查詢、票券管理、活動資訊、會員抽獎與專屬優惠。",
         "url": "{{ request.scheme }}://{{ request.get_host }}/"
     }
     </script>
@@ -77,7 +77,7 @@
                 <a href="{% url 'my_prizes' %}">我的獎品</a>
                 <a href="{% url 'points' %}">點數紀錄</a>
 
-                {% if user.is_staff %}
+                {% if can_access_staff_tools %}
                     <a href="{% url 'staff_add_points' %}">店員加點</a>
                     <a href="{% url 'staff_redeem' %}">店員核銷</a>
                 {% endif %}
