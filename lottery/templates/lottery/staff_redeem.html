@@ -1,0 +1,115 @@
+{% extends "pages/base.html" %}
+
+{% block title %}店員核銷｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚店員核銷頁面。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="staff-page">
+    <div class="section-title">
+        <p>Staff Redeem</p>
+        <h1>店員核銷</h1>
+        <span>輸入會員出示的兌換碼，確認獎品內容後完成核銷。</span>
+    </div>
+
+    <div class="staff-panel">
+        <form method="get" class="redeem-search-form">
+            <label>
+                兌換碼
+                <input
+                    type="text"
+                    name="code"
+                    value="{{ code }}"
+                    placeholder="例如 GP-ABCD-1234"
+                    autocomplete="off"
+                    required
+                >
+            </label>
+
+            <button type="submit" class="btn btn-primary">查詢兌換券</button>
+        </form>
+    </div>
+
+    {% if code and not target_spin %}
+        <div class="empty-state">
+            <span>🔍</span>
+            <h2>查無兌換券</h2>
+            <p>請確認會員提供的兌換碼是否正確。</p>
+        </div>
+    {% endif %}
+
+    {% if target_spin %}
+        <div class="redeem-result-card {% if not target_spin.can_redeem %}is-muted{% endif %}">
+            <div class="winner-top">
+                <div class="prize-icon">
+                    {% if target_spin.prize %}
+                        {{ target_spin.prize.image_emoji }}
+                    {% else %}
+                        🎁
+                    {% endif %}
+                </div>
+
+                <div>
+                    <p class="card-kicker">{{ target_spin.spin_code }}</p>
+                    <h2>{{ target_spin.prize_name }}</h2>
+                    <p>會員：{{ target_spin.user.email|default:target_spin.user.username }}</p>
+                </div>
+            </div>
+
+            <div class="redeem-info-grid">
+                <div>
+                    <span>兌換碼</span>
+                    <strong>{{ target_spin.redeem_code }}</strong>
+                </div>
+
+                <div>
+                    <span>狀態</span>
+                    <strong>{{ target_spin.get_coupon_status_display }}</strong>
+                </div>
+
+                <div>
+                    <span>抽獎時間</span>
+                    <strong>{{ target_spin.spin_time|date:"Y/m/d H:i" }}</strong>
+                </div>
+
+                <div>
+                    <span>到期時間</span>
+                    <strong>{{ target_spin.expire_at|date:"Y/m/d H:i" }}</strong>
+                </div>
+
+                {% if target_spin.redeemed_at %}
+                    <div>
+                        <span>核銷時間</span>
+                        <strong>{{ target_spin.redeemed_at|date:"Y/m/d H:i" }}</strong>
+                    </div>
+
+                    <div>
+                        <span>核銷人員</span>
+                        <strong>{{ target_spin.redeemed_by|default:"-" }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="detail-actions">
+                {% if target_spin.can_redeem %}
+                    <form method="post" action="{% url 'redeem_regular_coupon' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="redeem_code" value="{{ target_spin.redeem_code }}">
+                        <button type="submit" class="btn btn-primary">
+                            確認核銷
+                        </button>
+                    </form>
+                {% else %}
+                    <button type="button" class="btn btn-secondary" disabled>
+                        此兌換券不可核銷
+                    </button>
+                {% endif %}
+
+                <a href="{% url 'staff_redeem' %}" class="btn btn-secondary">
+                    查詢其他兌換碼
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -77,6 +77,11 @@
                 <a href="{% url 'my_prizes' %}">我的獎品</a>
                 <a href="{% url 'points' %}">點數紀錄</a>
 
+                {% if user.is_staff %}
+                    <a href="{% url 'staff_add_points' %}">店員加點</a>
+                    <a href="{% url 'staff_redeem' %}">店員核銷</a>
+                {% endif %}
+
                 <form method="post" action="{% url 'logout' %}" class="logout-form">
                     {% csrf_token %}
                     <button type="submit" class="nav-link-button">登出</button>

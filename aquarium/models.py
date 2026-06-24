@@ -192,3 +192,42 @@ class PointTransaction(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.get_transaction_type_display()} {self.points}"
+    
+class StaffPointGrant(models.Model):
+    member = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="staff_point_grants",
+        verbose_name="會員",
+    )
+    staff = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_point_grants",
+        verbose_name="操作店員",
+    )
+    purchase_amount = models.PositiveIntegerField(
+        verbose_name="消費金額",
+    )
+    earned_points = models.PositiveIntegerField(
+        verbose_name="獲得點數",
+    )
+    note = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="備註",
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="建立時間",
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "店員加點紀錄"
+        verbose_name_plural = "店員加點紀錄"
+
+    def __str__(self):
+        return f"{self.member} +{self.earned_points} 點"    

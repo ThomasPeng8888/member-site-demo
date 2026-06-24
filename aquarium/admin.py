@@ -5,6 +5,7 @@ from .models import (
     ActivityRegistration,
     MemberTicket,
     PointTransaction,
+    StaffPointGrant,
 )
 
 
@@ -57,3 +58,29 @@ class PointTransactionAdmin(admin.ModelAdmin):
     )
     list_filter = ("transaction_type", "created_at")
     search_fields = ("user__username", "user__email", "title", "note")
+
+@admin.register(StaffPointGrant)
+class StaffPointGrantAdmin(admin.ModelAdmin):
+    list_display = (
+        "member",
+        "staff",
+        "purchase_amount",
+        "earned_points",
+        "created_at",
+    )
+    list_filter = ("created_at", "staff")
+    search_fields = (
+        "member__username",
+        "member__email",
+        "staff__username",
+        "staff__email",
+        "note",
+    )
+    readonly_fields = (
+        "member",
+        "staff",
+        "purchase_amount",
+        "earned_points",
+        "note",
+        "created_at",
+    )

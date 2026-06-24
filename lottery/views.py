@@ -2,13 +2,13 @@ import secrets
 from datetime import timedelta
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import get_object_or_404, redirect, render
 
 from aquarium.models import PointTransaction
 from members.models import MemberProfile
@@ -158,3 +158,81 @@ def my_prizes(request):
             "spins": spins,
         },
     )
+
+def staff_required(user):
+    return user.is_authenticated and user.is_staff
+
+
+@user_passes_test(staff_required, login_url="login")
+def staff_redeem(request):
+    code = request.GET.get("code", "").strip()
+    target_spin = None
+
+    if code:
+        target_spin = LotterySpin.objects.filter(
+            redeem_code__iexact=code
+        ).select_related("user", "prize").first()
+
+        if target_spin and target_spin.is_expired and target_spin.coupon_status == "unredeemed":
+            target_spin.coupon_status = "expired"
+            target_spin.save(update_fields=["coupon_status"])
+
+    return render(
+        request,
+        "lottery/staff_redeem.html",
+        {
+            "code": code,
+            "target_spin": target_spin,
+        },
+    )
+
+
+@user_passes_test(staff_required, login_url="login")
+@require_POST
+def redeem_regular_coupon(request):
+    redeem_code = request.POST.get("redeem_code", "").strip()
+
+    if not redeem_code:
+        messages.error(request, "請輸入兌換碼。")
+        return redirect("staff_redeem")
+
+    with transaction.atomic():
+        spin = (
+            LotterySpin.objects
+            .select_for_update()
+            .select_related("user", "prize")
+            .filter(redeem_code__iexact=redeem_code)
+            .first()
+        )
+
+        if not spin:
+            messages.error(request, "找不到這張兌換券。")
+            return redirect("staff_redeem")
+
+        if spin.coupon_status == "redeemed":
+            messages.error(request, "這張兌換券已經核銷過了。")
+            return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")
+
+        if spin.coupon_status == "void":
+            messages.error(request, "這張兌換券已作廢，無法核銷。")
+            return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")
+
+        if spin.is_expired:
+            spin.coupon_status = "expired"
+            spin.save(update_fields=["coupon_status"])
+            messages.error(request, "這張兌換券已過期，無法核銷。")
+            return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")
+
+        spin.coupon_status = "redeemed"
+        spin.redeemed_at = timezone.now()
+        spin.redeemed_by = request.user.username or request.user.email
+        spin.save(
+            update_fields=[
+                "coupon_status",
+                "redeemed_at",
+                "redeemed_by",
+            ]
+        )
+
+    messages.success(request, f"核銷成功：{spin.prize_name}")
+    return redirect(f"{reverse('staff_redeem')}?code={spin.redeem_code}")

@@ -1,0 +1,103 @@
+{% extends "pages/base.html" %}
+
+{% block title %}店員加點｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚店員加點頁面。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="staff-page">
+    <div class="section-title">
+        <p>Staff Points</p>
+        <h1>店員消費加點</h1>
+        <span>每消費 {{ point_amount_unit }} 元累積 1 點，系統會自動計算並寫入會員點數。</span>
+    </div>
+
+    <div class="staff-panel">
+        <form method="get" class="redeem-search-form">
+            <label>
+                查詢會員
+                <input
+                    type="text"
+                    name="keyword"
+                    value="{{ request.GET.keyword }}"
+                    placeholder="會員編號 / Email / 手機"
+                    autocomplete="off"
+                    required
+                >
+            </label>
+
+            <button type="submit" class="btn btn-secondary">查詢會員</button>
+        </form>
+    </div>
+
+    {% if target_user and target_profile %}
+        <div class="redeem-result-card">
+            <div class="winner-top">
+                <div class="prize-icon">🐠</div>
+
+                <div>
+                    <p class="card-kicker">{{ target_profile.member_no }}</p>
+                    <h2>{{ target_user.first_name|default:target_user.email|default:target_user.username }}</h2>
+                    <p>{{ target_user.email }} ・ 目前點數 {{ target_profile.points }}</p>
+                </div>
+            </div>
+
+            <form method="post" class="staff-add-points-form">
+                {% csrf_token %}
+
+                <input type="hidden" name="keyword" value="{{ target_profile.member_no }}">
+
+                <label>
+                    消費金額
+                    <input
+                        type="number"
+                        name="purchase_amount"
+                        min="1"
+                        step="1"
+                        placeholder="例如 1200"
+                        required
+                    >
+                    <small>每 {{ point_amount_unit }} 元累積 1 點，例如 1200 元 = 4 點。</small>
+                </label>
+
+                <label>
+                    備註
+                    <input
+                        type="text"
+                        name="note"
+                        placeholder="例如：現場購買飼料 / 活體 / 器材"
+                    >
+                </label>
+
+                <button type="submit" class="btn btn-primary">
+                    確認加點
+                </button>
+            </form>
+        </div>
+    {% endif %}
+
+    <div class="panel recent-grants-panel">
+        <div class="panel-heading">
+            <h2>近期加點紀錄</h2>
+        </div>
+
+        {% for grant in recent_grants %}
+            <div class="point-row">
+                <div>
+                    <strong>
+                        {{ grant.member.email|default:grant.member.username }}
+                        +{{ grant.earned_points }} 點
+                    </strong>
+                    <p>
+                        消費 {{ grant.purchase_amount }} 元 ・
+                        店員 {{ grant.staff.email|default:grant.staff.username|default:"-" }} ・
+                        {{ grant.created_at|date:"Y/m/d H:i" }}
+                    </p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="muted">目前尚未有店員加點紀錄。</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
