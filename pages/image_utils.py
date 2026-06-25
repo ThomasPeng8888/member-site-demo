@@ -21,7 +21,7 @@ WATERMARK_ASSET = (
     / "static"
     / "pages"
     / "images"
-    / "gabi-watermark-text.png"
+    / "guppyguppy-watermark-text.png"
 )
 
 JPEG_SUFFIXES = {".jpg", ".jpeg"}

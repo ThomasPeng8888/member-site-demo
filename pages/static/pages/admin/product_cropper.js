@@ -24,26 +24,26 @@
         if (!cropX || !cropY || !cropW || !cropH) return;
 
         const panel = document.createElement("div");
-        panel.className = "gabi-product-cropper";
+        panel.className = "guppyguppy-product-cropper";
         panel.innerHTML = `
-            <div class="gabi-cropper-heading">
+            <div class="guppyguppy-cropper-heading">
                 <div>
                     <strong>商品圖片正方形裁切</strong>
                     <p>選擇照片後，拖曳白色正方形框調整商品主體位置；右下角圓點可調整裁切大小。儲存後會自動輸出正方形圖片、壓縮並套用品牌浮水印。</p>
                 </div>
-                <span class="gabi-cropper-badge">1:1 官方商品圖</span>
+                <span class="guppyguppy-cropper-badge">1:1 官方商品圖</span>
             </div>
-            <div class="gabi-cropper-layout">
-                <div class="gabi-cropper-stage-wrap">
-                    <div class="gabi-cropper-stage">
+            <div class="guppyguppy-cropper-layout">
+                <div class="guppyguppy-cropper-stage-wrap">
+                    <div class="guppyguppy-cropper-stage">
                         <img alt="商品裁切預覽" />
-                        <div class="gabi-crop-box"><span class="gabi-crop-handle" aria-hidden="true"></span></div>
+                        <div class="guppyguppy-crop-box"><span class="guppyguppy-crop-handle" aria-hidden="true"></span></div>
                     </div>
                 </div>
-                <div class="gabi-crop-preview-panel">
+                <div class="guppyguppy-crop-preview-panel">
                     <strong>前台預覽</strong>
-                    <div class="gabi-crop-preview"><img alt="正方形預覽" /></div>
-                    <p class="gabi-cropper-note">商品列表、商品詳情與浮水印位置都會以此正方形為基準。</p>
+                    <div class="guppyguppy-crop-preview"><img alt="正方形預覽" /></div>
+                    <p class="guppyguppy-cropper-note">商品列表、商品詳情與浮水印位置都會以此正方形為基準。</p>
                 </div>
             </div>
         `;
@@ -51,11 +51,11 @@
         const imageFieldRow = input.closest(".form-row") || input.parentElement;
         imageFieldRow.insertAdjacentElement("afterend", panel);
 
-        const stage = panel.querySelector(".gabi-cropper-stage");
+        const stage = panel.querySelector(".guppyguppy-cropper-stage");
         const image = stage.querySelector("img");
-        const box = stage.querySelector(".gabi-crop-box");
-        const handle = stage.querySelector(".gabi-crop-handle");
-        const preview = panel.querySelector(".gabi-crop-preview");
+        const box = stage.querySelector(".guppyguppy-crop-box");
+        const handle = stage.querySelector(".guppyguppy-crop-handle");
+        const preview = panel.querySelector(".guppyguppy-crop-preview");
         const previewImage = preview.querySelector("img");
 
         let imageUrl = null;

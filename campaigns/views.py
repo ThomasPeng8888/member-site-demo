@@ -175,7 +175,7 @@ def campaign_winner_qr_png(request, winner_id):
 
     return qr_png_response(
         staff_redeem_url,
-        filename=f"gabi-campaign-{winner.redeem_code}.png",
+        filename=f"guppyguppy-campaign-{winner.redeem_code}.png",
     )
 
 

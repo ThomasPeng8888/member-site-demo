@@ -77,5 +77,5 @@ def member_qr_png(request):
     )
     return qr_png_response(
         staff_add_points_url,
-        filename=f"gabi-member-{profile.member_no}.png",
+        filename=f"guppyguppy-member-{profile.member_no}.png",
     )

@@ -191,7 +191,7 @@ def regular_prize_qr_png(request, spin_code):
 
     return qr_png_response(
         staff_redeem_url,
-        filename=f"gabi-prize-{spin.redeem_code}.png",
+        filename=f"guppyguppy-prize-{spin.redeem_code}.png",
     )
 
 

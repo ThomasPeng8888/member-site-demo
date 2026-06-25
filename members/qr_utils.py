@@ -4,7 +4,7 @@ import qrcode
 from django.http import HttpResponse
 
 
-def qr_png_response(payload, filename="gabi-qr.png"):
+def qr_png_response(payload, filename="guppyguppy-qr.png"):
     """Return a private PNG QR code response for the given payload URL/text."""
     qr = qrcode.QRCode(
         version=None,
