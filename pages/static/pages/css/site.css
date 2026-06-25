@@ -2923,3 +2923,90 @@ code {
         font-size: 24px;
     }
 }
+
+/* =========================================================
+   Navigation IA polish: one-stop official site hierarchy
+   - Merge member-related links into a clear Member Center menu
+   - Move activity links into an Activity Area menu
+   - Keep staff tools separate for operation tasks
+   ========================================================= */
+.nav-primary-links {
+    gap: 8px;
+}
+
+.nav-member-center > summary,
+.nav-activity-center > summary {
+    font-weight: 800;
+    color: var(--brand-navy);
+}
+
+.nav-member-center[open] > summary,
+.nav-member-center > summary:hover,
+.nav-activity-center[open] > summary,
+.nav-activity-center > summary:hover {
+    background: rgba(36, 83, 163, 0.08);
+    color: var(--brand-navy);
+}
+
+.nav-dropdown-primary .nav-dropdown-menu {
+    left: 0;
+    right: auto;
+}
+
+.nav-account-links .nav-dropdown-menu,
+.nav-dropdown-staff .nav-dropdown-menu {
+    left: auto;
+    right: 0;
+}
+
+.nav-dropdown-menu-wide {
+    min-width: 250px;
+}
+
+.nav-dropdown-section-title {
+    display: block;
+    padding: 9px 13px 5px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: rgba(24, 42, 104, 0.62);
+}
+
+.nav-dropdown-section-title + a {
+    margin-top: 0;
+}
+
+.nav-dropdown-menu a {
+    border-radius: 15px;
+}
+
+.nav-dropdown-menu a:hover {
+    background: rgba(54, 168, 207, 0.10);
+    color: var(--brand-navy);
+}
+
+.nav-member-shortcut {
+    box-shadow: 0 12px 28px rgba(24, 42, 104, 0.10);
+}
+
+@media (max-width: 900px) {
+    .nav-dropdown-primary .nav-dropdown-menu,
+    .nav-account-links .nav-dropdown-menu,
+    .nav-dropdown-staff .nav-dropdown-menu {
+        left: auto;
+        right: auto;
+    }
+
+    .nav-dropdown-menu-wide {
+        min-width: 0;
+    }
+
+    .nav-dropdown-section-title {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .nav-member-shortcut {
+        order: -1;
+    }
+}

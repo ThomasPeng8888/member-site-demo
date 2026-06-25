@@ -1,22 +1,22 @@
 {% extends "pages/base.html" %}
 
-{% block title %}會員中心｜嘎比嘎比孔雀魚{% endblock %}
-{% block meta_description %}嘎比嘎比孔雀魚會員中心，查看個人會員資料、點數、票券、活動紀錄與抽獎獎品。{% endblock %}
+{% block title %}會員資料｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚會員資料頁，查看個人會員編號、點數、票券、活動紀錄、抽獎獎品與 LINE 綁定狀態。{% endblock %}
 {% block robots %}noindex,nofollow{% endblock %}
 
 {% block content %}
 <section class="dashboard">
     <div class="welcome-panel">
         <div>
-            <p class="eyebrow">Member Dashboard</p>
-            <h1>嗨，{{ display_name }}！今天想看看哪一缸孔雀魚？</h1>
+            <p class="eyebrow">Member Profile</p>
+            <h1>嗨，{{ display_name }}！這裡是你的會員資料與專屬紀錄。</h1>
             <p class="muted">
                 會員編號：{{ profile.member_no }} ・ 
-                這裡會顯示會員點數、票券、活動與專屬優惠。
+                這裡會顯示會員點數、票券、活動、抽獎與 LINE 綁定狀態。
             </p>
         </div>
 
-        <a href="{% url 'activities' %}" class="btn btn-primary">查看活動</a>
+        <a href="{% url 'lottery' %}" class="btn btn-primary">前往會員抽獎</a>
     </div>
 
     <div class="dashboard-grid">

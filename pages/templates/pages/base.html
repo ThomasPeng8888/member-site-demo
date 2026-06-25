@@ -69,26 +69,48 @@
         <nav class="nav" id="site-nav" data-site-nav aria-label="主選單">
             <div class="nav-primary-links">
                 <a href="{% url 'home' %}">首頁</a>
-                <a href="{% url 'lottery' %}">會員抽獎</a>
-                <a href="{% url 'campaign_list' %}">活動抽獎</a>
-                <a href="{% url 'activities' %}">活動資訊</a>
-                <a href="{% url 'rewards' %}">會員優惠</a>
+
+                <details class="nav-dropdown nav-dropdown-primary nav-member-center">
+                    <summary>會員中心</summary>
+                    <div class="nav-dropdown-menu nav-dropdown-menu-wide">
+                        {% if user.is_authenticated %}
+                            <span class="nav-dropdown-section-title">會員資料</span>
+                            <a href="{% url 'dashboard' %}">會員資料總覽</a>
+                            <a href="{% url 'line_settings' %}">LINE 綁定設定</a>
+
+                            <span class="nav-dropdown-section-title">會員服務</span>
+                            <a href="{% url 'lottery' %}">會員抽獎</a>
+                            <a href="{% url 'rewards' %}">會員優惠</a>
+                            <a href="{% url 'tickets' %}">我的票券</a>
+                            <a href="{% url 'my_prizes' %}">我的獎品</a>
+                            <a href="{% url 'points' %}">點數紀錄</a>
+                        {% else %}
+                            <span class="nav-dropdown-section-title">加入會員</span>
+                            <a href="{% url 'register' %}">免費加入會員</a>
+                            <a href="{% url 'login' %}">會員登入</a>
+
+                            <span class="nav-dropdown-section-title">會員服務</span>
+                            <a href="{% url 'lottery' %}">會員抽獎</a>
+                            <a href="{% url 'rewards' %}">會員優惠</a>
+                        {% endif %}
+                    </div>
+                </details>
+
+                <details class="nav-dropdown nav-dropdown-primary nav-activity-center">
+                    <summary>活動專區</summary>
+                    <div class="nav-dropdown-menu">
+                        <a href="{% url 'activities' %}">活動資訊</a>
+                        <a href="{% url 'campaign_list' %}">活動抽獎</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'my_campaigns' %}">我的活動抽獎</a>
+                        {% endif %}
+                    </div>
+                </details>
             </div>
 
             <div class="nav-account-links">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="nav-button">會員中心</a>
-
-                    <details class="nav-dropdown">
-                        <summary>我的功能</summary>
-                        <div class="nav-dropdown-menu">
-                            <a href="{% url 'tickets' %}">我的票券</a>
-                            <a href="{% url 'my_prizes' %}">我的獎品</a>
-                            <a href="{% url 'my_campaigns' %}">我的活動抽獎</a>
-                            <a href="{% url 'points' %}">點數紀錄</a>
-                            <a href="{% url 'line_settings' %}">LINE 綁定</a>
-                        </div>
-                    </details>
+                    <a href="{% url 'dashboard' %}" class="nav-button nav-member-shortcut">會員資料</a>
 
                     {% if can_access_staff_tools or can_manage_campaigns %}
                         <details class="nav-dropdown nav-dropdown-staff">
