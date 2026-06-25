@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
+from .image_utils import apply_brand_watermark_to_image_field
 from .models import NewsPost, Product, StoreInfo
 
 
@@ -41,6 +42,7 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     list_editable = ("status", "is_featured", "is_published", "sort_order")
     readonly_fields = ("image_preview",)
+    actions = ("apply_watermark_to_selected",)
     fieldsets = (
         ("基本資料", {"fields": ("title", "slug", "category", "short_description", "description")} ),
         ("商品圖片與價格", {"fields": ("image", "image_preview", "price_label")} ),
@@ -55,6 +57,26 @@ class ProductAdmin(admin.ModelAdmin):
             '<img src="{}" style="width: 72px; height: 72px; object-fit: cover; border-radius: 14px;" alt="" />',
             obj.image.url,
         )
+
+    @admin.action(description="重新套用嘎比嘎比孔雀魚浮水印")
+    def apply_watermark_to_selected(self, request, queryset):
+        total = 0
+        skipped = 0
+
+        for product in queryset:
+            if not product.image:
+                skipped += 1
+                continue
+
+            image_name_changed = apply_brand_watermark_to_image_field(product.image)
+            if image_name_changed:
+                Product.objects.filter(pk=product.pk).update(image=product.image.name)
+            total += 1
+
+        if total:
+            self.message_user(request, f"已處理 {total} 張商品圖片浮水印。")
+        if skipped:
+            self.message_user(request, f"另有 {skipped} 個商品尚未上傳圖片，已略過。")
 
 
 @admin.register(StoreInfo)

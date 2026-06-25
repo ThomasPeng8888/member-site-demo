@@ -111,6 +111,26 @@ class Product(models.Model):
     def get_absolute_url(self):
         return reverse("product_detail", kwargs={"slug": self.slug})
 
+    def save(self, *args, **kwargs):
+        should_watermark = bool(self.image)
+
+        if self.pk:
+            previous_image = (
+                Product.objects.filter(pk=self.pk)
+                .values_list("image", flat=True)
+                .first()
+            )
+            should_watermark = bool(self.image) and self.image.name != previous_image
+
+        super().save(*args, **kwargs)
+
+        if should_watermark and self.image:
+            from .image_utils import apply_brand_watermark_to_image_field
+
+            image_name_changed = apply_brand_watermark_to_image_field(self.image)
+            if image_name_changed and self.pk:
+                type(self).objects.filter(pk=self.pk).update(image=self.image.name)
+
     @property
     def is_visible(self):
         return self.is_published and self.status != "hidden"
