@@ -11,7 +11,7 @@ from pathlib import Path, PurePosixPath
 
 from django.conf import settings
 from django.core.files.base import ContentFile
-from PIL import Image, ImageEnhance, ImageOps
+from PIL import Image, ImageEnhance, ImageOps, ImageStat
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +122,83 @@ def _flatten_to_rgb(image: Image.Image) -> Image.Image:
     background = Image.new("RGB", rgba.size, "white")
     background.paste(rgba, mask=rgba.getchannel("A"))
     return background
+
+
+def _mean_luminance(image: Image.Image) -> float:
+    """Return average luminance (0..255) for adaptive watermark styling."""
+    rgb = image.convert("RGB")
+    r, g, b = ImageStat.Stat(rgb).mean[:3]
+    return (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+
+
+def _sample_region(image: Image.Image, box) -> Image.Image:
+    left, top, right, bottom = box
+    left = max(0, min(int(left), image.width - 1))
+    top = max(0, min(int(top), image.height - 1))
+    right = max(left + 1, min(int(right), image.width))
+    bottom = max(top + 1, min(int(bottom), image.height))
+    return image.crop((left, top, right, bottom))
+
+
+def _tint_from_alpha(image: Image.Image, color: tuple[int, int, int]) -> Image.Image:
+    """Colorize a watermark using only its alpha channel."""
+    rgba = image.convert("RGBA")
+    alpha = rgba.getchannel("A")
+    colored = Image.new("RGBA", rgba.size, (*color, 0))
+    colored.putalpha(alpha)
+    return colored
+
+
+def _build_outlined_mark(
+    source: Image.Image,
+    *,
+    width: int,
+    fill_color: tuple[int, int, int],
+    fill_opacity: float,
+    outline_color: tuple[int, int, int],
+    outline_opacity: float,
+    rotate: float = 0,
+) -> Image.Image:
+    """Prepare a watermark with a subtle opposite-tone outline for visibility."""
+    base = _resize_to_width(source, width)
+    fill = _apply_alpha(_tint_from_alpha(base, fill_color), fill_opacity)
+    outline = _apply_alpha(_tint_from_alpha(base, outline_color), outline_opacity)
+
+    canvas = Image.new("RGBA", (fill.width + 8, fill.height + 8), (255, 255, 255, 0))
+    offsets = [(-2, 0), (2, 0), (0, -2), (0, 2), (-1, -1), (1, 1), (-1, 1), (1, -1)]
+    for dx, dy in offsets:
+        canvas.alpha_composite(outline, dest=(dx + 4, dy + 4))
+    canvas.alpha_composite(fill, dest=(4, 4))
+
+    if rotate:
+        canvas = canvas.rotate(rotate, expand=True, resample=Image.Resampling.BICUBIC)
+
+    return canvas
+
+
+def _choose_watermark_style(region: Image.Image) -> dict:
+    """Choose a dark or light watermark style based on local brightness."""
+    luminance = _mean_luminance(region)
+    if luminance < 92:
+        return {
+            "fill_color": (247, 250, 255),
+            "outline_color": (18, 42, 104),
+            "fill_opacity": 0.31,
+            "outline_opacity": 0.18,
+        }
+    if luminance > 160:
+        return {
+            "fill_color": (18, 42, 104),
+            "outline_color": (245, 249, 255),
+            "fill_opacity": 0.30,
+            "outline_opacity": 0.12,
+        }
+    return {
+        "fill_color": (18, 42, 104),
+        "outline_color": (236, 244, 255),
+        "fill_opacity": 0.28,
+        "outline_opacity": 0.12,
+    }
 
 
 def _choose_output_name(original_name: str, suffix: str) -> str:
@@ -238,21 +315,55 @@ def apply_brand_watermark_to_image_field(image_field, crop_box=None) -> bool:
     overlay = Image.new("RGBA", base.size, (255, 255, 255, 0))
     min_edge = min(width, height)
 
-    # 1) Center diagonal text: stronger than the previous version so it remains visible even on darker fish photos,
-    #    while still being gentle enough to preserve color, fin detail, and the overall shopping experience.
+    # Sample local brightness so the watermark can switch between navy and
+    # bright watermark variants. This keeps it visible on both white-tail fish
+    # and dark-blue fish on black backgrounds.
+    center_region = _sample_region(
+        base,
+        (
+            width * 0.20,
+            height * 0.22,
+            width * 0.80,
+            height * 0.78,
+        ),
+    )
+    corner_region = _sample_region(
+        base,
+        (
+            width * 0.66,
+            height * 0.66,
+            width,
+            height,
+        ),
+    )
+
+    # 1) Center diagonal text: stronger and adaptive so it remains readable on
+    #    darker fish photos, while still staying soft enough for product pages.
     if min_edge >= 420:
+        center_style = _choose_watermark_style(center_region)
         center_width = min(int(width * 0.64), int(height * 1.1), 920)
-        center_mark = _resize_to_width(watermark_source, center_width)
-        center_mark = _apply_alpha(center_mark, 0.22)
-        center_mark = center_mark.rotate(-18, expand=True, resample=Image.Resampling.BICUBIC)
+        center_mark = _build_outlined_mark(
+            watermark_source,
+            width=center_width,
+            rotate=-18,
+            **center_style,
+        )
         center_position = ((width - center_mark.width) // 2, (height - center_mark.height) // 2)
         overlay.alpha_composite(center_mark, dest=center_position)
 
-    # 2) Bottom-right signature: visible enough for brand ownership but kept
-    #    modest and away from the central product subject.
+    # 2) Bottom-right signature: slightly crisper than before because this is a
+    #    cleaner area and a good place for brand ownership without blocking fish details.
+    corner_style = _choose_watermark_style(corner_region)
     corner_width = min(max(int(width * 0.26), 150), 360)
-    corner_mark = _resize_to_width(watermark_source, corner_width)
-    corner_mark = _apply_alpha(corner_mark, 0.22)
+    corner_mark = _build_outlined_mark(
+        watermark_source,
+        width=corner_width,
+        rotate=0,
+        fill_opacity=min(0.34, corner_style["fill_opacity"] + 0.02),
+        outline_opacity=min(0.2, corner_style["outline_opacity"] + 0.02),
+        fill_color=corner_style["fill_color"],
+        outline_color=corner_style["outline_color"],
+    )
     margin = max(16, int(min_edge * 0.035))
     corner_position = (
         max(margin, width - corner_mark.width - margin),
