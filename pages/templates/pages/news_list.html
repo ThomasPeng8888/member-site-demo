@@ -1,0 +1,35 @@
+{% extends "pages/base.html" %}
+
+{% block title %}最新消息｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}查看嘎比嘎比孔雀魚最新消息、新品到貨、飼育知識、活動公告與店鋪資訊。{% endblock %}
+{% block og_title %}最新消息｜嘎比嘎比孔雀魚{% endblock %}
+
+{% block content %}
+<section class="official-page news-page">
+    <div class="section-title official-page-title">
+        <p>Latest News</p>
+        <h1>最新消息</h1>
+        <span>品牌公告、新品到貨、飼育知識與活動提醒會整理在這裡。</span>
+    </div>
+
+    <div class="official-card-grid news-card-grid">
+        {% for post in posts %}
+            <article class="official-card news-card">
+                <div class="official-card-icon">{{ post.cover_emoji }}</div>
+                <div class="official-card-meta">
+                    <span>{{ post.get_category_display }}</span>
+                    <time datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|date:"Y.m.d" }}</time>
+                </div>
+                <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+                <p>{{ post.summary }}</p>
+                <a href="{{ post.get_absolute_url }}" class="card-link">閱讀更多</a>
+            </article>
+        {% empty %}
+            <div class="empty-state official-empty-state">
+                <h3>目前尚無公開消息</h3>
+                <p>請先到後台新增「最新消息」，並設定為公開。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

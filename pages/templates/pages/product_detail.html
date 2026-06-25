@@ -1,0 +1,38 @@
+{% extends "pages/base.html" %}
+
+{% block title %}{{ product.title }}｜我的商品｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}{{ product.short_description }}{% endblock %}
+{% block og_title %}{{ product.title }}｜嘎比嘎比孔雀魚{% endblock %}
+{% block og_description %}{{ product.short_description }}{% endblock %}
+
+{% block content %}
+<section class="official-detail-page product-detail-page">
+    <a href="{% url 'product_list' %}" class="text-link">← 回我的商品</a>
+    <div class="product-detail-layout">
+        <div class="product-detail-media">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.title }}">
+            {% else %}
+                <div class="product-detail-placeholder">🐠</div>
+            {% endif %}
+        </div>
+        <article class="official-detail-card product-detail-content">
+            <div class="official-card-meta">
+                <span>{{ product.get_category_display }}</span>
+                <span>{{ product.get_status_display }}</span>
+                {% if product.is_featured %}<span>首頁精選</span>{% endif %}
+            </div>
+            <h1>{{ product.title }}</h1>
+            <p class="official-detail-summary">{{ product.short_description }}</p>
+            {% if product.price_label %}<strong class="price-label large">{{ product.price_label }}</strong>{% endif %}
+            <div class="official-rich-text">
+                {{ product.description|linebreaks }}
+            </div>
+            <div class="hero-actions detail-actions">
+                <a href="{% url 'store_info' %}" class="btn btn-primary">查看店鋪資訊</a>
+                {% if user.is_authenticated %}<a href="{% url 'line_settings' %}" class="btn btn-secondary">會員 / LINE 設定</a>{% else %}<a href="{% url 'register' %}" class="btn btn-secondary">加入會員</a>{% endif %}
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

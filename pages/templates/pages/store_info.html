@@ -1,0 +1,64 @@
+{% extends "pages/base.html" %}
+
+{% block title %}店鋪資訊｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}查看嘎比嘎比孔雀魚店鋪介紹、營業時間、地址、聯絡方式與到店提醒。{% endblock %}
+{% block og_title %}店鋪資訊｜嘎比嘎比孔雀魚{% endblock %}
+
+{% block content %}
+<section class="official-page store-page">
+    <div class="section-title official-page-title">
+        <p>Store Info</p>
+        <h1>店鋪資訊</h1>
+        <span>把到店前需要知道的資訊整理清楚，讓新朋友與會員都能快速找到重點。</span>
+    </div>
+
+    <div class="store-info-grid-page">
+        {% for store in stores %}
+            <article class="store-detail-card">
+                <span class="store-badge">{% if store.is_primary %}主要店鋪{% else %}店鋪資訊{% endif %}</span>
+                <h2>{{ store.name }}</h2>
+                {% if store.tagline %}<p class="store-tagline">{{ store.tagline }}</p>{% endif %}
+                <div class="official-rich-text">{{ store.intro|linebreaks }}</div>
+
+                <div class="store-contact-grid">
+                    {% if store.address %}
+                        <div>
+                            <strong>地址</strong>
+                            <span>{{ store.address }}</span>
+                        </div>
+                    {% endif %}
+                    {% if store.business_hours %}
+                        <div>
+                            <strong>營業時間</strong>
+                            <span>{{ store.business_hours|linebreaksbr }}</span>
+                        </div>
+                    {% endif %}
+                    {% if store.phone %}
+                        <div>
+                            <strong>聯絡電話</strong>
+                            <span>{{ store.phone }}</span>
+                        </div>
+                    {% endif %}
+                    {% if store.note %}
+                        <div>
+                            <strong>到店提醒</strong>
+                            <span>{{ store.note|linebreaksbr }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="hero-actions store-actions">
+                    {% if store.google_map_url %}<a href="{{ store.google_map_url }}" class="btn btn-primary" target="_blank" rel="noopener">開啟地圖</a>{% endif %}
+                    {% if store.line_url %}<a href="{{ store.line_url }}" class="btn btn-secondary" target="_blank" rel="noopener">LINE 聯絡</a>{% endif %}
+                    {% if store.facebook_url %}<a href="{{ store.facebook_url }}" class="btn btn-secondary" target="_blank" rel="noopener">社群頁面</a>{% endif %}
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state official-empty-state">
+                <h3>店鋪資訊準備中</h3>
+                <p>請先到後台新增「店鋪資訊」，並設定為公開。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

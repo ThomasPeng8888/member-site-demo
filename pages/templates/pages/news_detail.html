@@ -1,0 +1,25 @@
+{% extends "pages/base.html" %}
+
+{% block title %}{{ post.title }}｜最新消息｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}{{ post.summary }}{% endblock %}
+{% block og_title %}{{ post.title }}｜嘎比嘎比孔雀魚{% endblock %}
+{% block og_description %}{{ post.summary }}{% endblock %}
+
+{% block content %}
+<article class="official-detail-page news-detail-page">
+    <a href="{% url 'news_list' %}" class="text-link">← 回最新消息</a>
+    <div class="official-detail-card">
+        <div class="official-card-icon detail-icon">{{ post.cover_emoji }}</div>
+        <div class="official-card-meta">
+            <span>{{ post.get_category_display }}</span>
+            <time datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|date:"Y.m.d" }}</time>
+            {% if post.is_pinned %}<span>置頂</span>{% endif %}
+        </div>
+        <h1>{{ post.title }}</h1>
+        <p class="official-detail-summary">{{ post.summary }}</p>
+        <div class="official-rich-text">
+            {{ post.content|linebreaks }}
+        </div>
+    </div>
+</article>
+{% endblock %}

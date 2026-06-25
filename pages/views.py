@@ -1,16 +1,72 @@
 from xml.sax.saxutils import escape
 
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.utils import timezone
+
+from .models import NewsPost, Product, StoreInfo
+
+
+def published_news_queryset():
+    return NewsPost.objects.filter(is_published=True, published_at__lte=timezone.now())
+
+
+def visible_products_queryset():
+    return Product.objects.filter(is_published=True).exclude(status="hidden")
+
+
+def visible_stores_queryset():
+    return StoreInfo.objects.filter(is_published=True)
 
 
 def home(request):
-    return render(request, "pages/home.html")
+    latest_news = published_news_queryset()[:3]
+    featured_products = visible_products_queryset().filter(is_featured=True)[:3]
+
+    if not featured_products.exists():
+        featured_products = visible_products_queryset()[:3]
+
+    stores = visible_stores_queryset()[:2]
+
+    return render(
+        request,
+        "pages/home.html",
+        {
+            "latest_news": latest_news,
+            "featured_products": featured_products,
+            "stores": stores,
+        },
+    )
 
 
 def rewards(request):
     return render(request, "pages/rewards.html")
+
+
+def news_list(request):
+    posts = published_news_queryset()
+    return render(request, "pages/news_list.html", {"posts": posts})
+
+
+def news_detail(request, slug):
+    post = get_object_or_404(published_news_queryset(), slug=slug)
+    return render(request, "pages/news_detail.html", {"post": post})
+
+
+def product_list(request):
+    products = visible_products_queryset()
+    return render(request, "pages/product_list.html", {"products": products})
+
+
+def product_detail(request, slug):
+    product = get_object_or_404(visible_products_queryset(), slug=slug)
+    return render(request, "pages/product_detail.html", {"product": product})
+
+
+def store_info(request):
+    stores = visible_stores_queryset()
+    return render(request, "pages/store_info.html", {"stores": stores})
 
 
 def robots_txt(request):
@@ -41,10 +97,12 @@ def robots_txt(request):
 def sitemap_xml(request):
     public_pages = [
         {"name": "home", "changefreq": "weekly", "priority": "1.0"},
-        {"name": "activities", "changefreq": "weekly", "priority": "0.9"},
-        {"name": "lottery", "changefreq": "weekly", "priority": "0.8"},
+        {"name": "news_list", "changefreq": "weekly", "priority": "0.9"},
+        {"name": "product_list", "changefreq": "weekly", "priority": "0.9"},
+        {"name": "store_info", "changefreq": "monthly", "priority": "0.8"},
+        {"name": "activities", "changefreq": "weekly", "priority": "0.8"},
         {"name": "campaign_list", "changefreq": "weekly", "priority": "0.8"},
-        {"name": "rewards", "changefreq": "weekly", "priority": "0.8"},
+        {"name": "rewards", "changefreq": "weekly", "priority": "0.7"},
     ]
 
     url_items = []
@@ -60,6 +118,36 @@ def sitemap_xml(request):
             </url>
             """
         )
+
+    try:
+        for post in published_news_queryset().only("slug"):
+            location = request.build_absolute_uri(post.get_absolute_url())
+            url_items.append(
+                f"""
+                <url>
+                    <loc>{escape(location)}</loc>
+                    <changefreq>weekly</changefreq>
+                    <priority>0.7</priority>
+                </url>
+                """
+            )
+    except Exception:
+        pass
+
+    try:
+        for product in visible_products_queryset().only("slug"):
+            location = request.build_absolute_uri(product.get_absolute_url())
+            url_items.append(
+                f"""
+                <url>
+                    <loc>{escape(location)}</loc>
+                    <changefreq>weekly</changefreq>
+                    <priority>0.7</priority>
+                </url>
+                """
+            )
+    except Exception:
+        pass
 
     try:
         from aquarium.models import Activity
@@ -78,7 +166,6 @@ def sitemap_xml(request):
     except Exception:
         # Keep sitemap available even during first deployment before migrations.
         pass
-
 
     try:
         from campaigns.models import Campaign

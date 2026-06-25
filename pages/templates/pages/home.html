@@ -1,76 +1,163 @@
 {% extends "pages/base.html" %}
 
-{% block title %}嘎比嘎比孔雀魚｜會員網站與抽獎活動{% endblock %}
-{% block meta_description %}加入嘎比嘎比孔雀魚會員中心，累積點數、參加抽獎活動、查看會員優惠與專屬票券。{% endblock %}
-{% block og_title %}嘎比嘎比孔雀魚｜會員中心{% endblock %}
-{% block og_description %}嘎比嘎比孔雀魚會員中心，提供會員點數、抽獎活動、專屬優惠與活動通知。{% endblock %}
+{% block title %}嘎比嘎比孔雀魚｜官方網站與會員中心{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚官方網站，提供最新消息、精選商品、店鋪資訊、活動專區與會員中心服務。{% endblock %}
+{% block og_title %}嘎比嘎比孔雀魚｜官方網站{% endblock %}
+{% block og_description %}探索嘎比嘎比孔雀魚最新消息、精選商品、店鋪資訊、活動與會員服務。{% endblock %}
 
 {% block content %}
-<section class="hero">
+<section class="hero official-hero">
     <div class="hero-text">
-        <p class="eyebrow">Guppy Membership</p>
-        <h1>把每一次養魚與交流，變成一段有趣的小旅程。</h1>
+        <p class="eyebrow">Guppy Official Site</p>
+        <h1>專注孔雀魚選育，讓每一次交流都更安心、更有趣。</h1>
         <p class="hero-desc">
-            {% if user.is_authenticated %}
-                歡迎回來，{{ user.first_name|default:user.email|default:user.username }}。
-                你可以查看會員點數、票券、活動紀錄與專屬抽獎。
-            {% else %}
-                加入嘎比嘎比孔雀魚會員中心，累積點數、參加抽獎、查看專屬優惠，
-                未來也能透過 LINE 快速查詢會員資訊。
-            {% endif %}
+            嘎比嘎比孔雀魚整合最新消息、精選商品、店鋪資訊、活動專區與會員中心，
+            讓新朋友能快速認識品牌，老會員也能輕鬆查詢點數、票券、抽獎與活動紀錄。
         </p>
 
         <div class="hero-actions">
+            <a href="{% url 'product_list' %}" class="btn btn-primary">瀏覽我的商品</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="btn btn-primary">前往會員中心</a>
-                <a href="{% url 'activities' %}" class="btn btn-secondary">查看活動資訊</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">前往會員中心</a>
             {% else %}
-                <a href="{% url 'register' %}" class="btn btn-primary">免費加入會員</a>
-                <a href="{% url 'login' %}" class="btn btn-secondary">會員登入</a>
+                <a href="{% url 'register' %}" class="btn btn-secondary">加入會員</a>
             {% endif %}
         </div>
 
         <div class="hero-stats">
             <div>
-                <strong>3,200+</strong>
-                <span>會員加入</span>
+                <strong>專業</strong>
+                <span>孔雀魚選育</span>
             </div>
             <div>
-                <strong>12</strong>
-                <span>每月活動</span>
+                <strong>舒適</strong>
+                <span>清楚導覽體驗</span>
             </div>
             <div>
-                <strong>98%</strong>
-                <span>滿意回訪</span>
+                <strong>會員</strong>
+                <span>點數與活動整合</span>
             </div>
         </div>
     </div>
 
     <div class="hero-card">
-        <div class="aquarium-card">
+        <div class="aquarium-card official-aquarium-card">
             <div class="fish fish-a">🐟</div>
             <div class="fish fish-b">🐠</div>
             <div class="fish fish-c">🐡</div>
             <div class="water-line"></div>
             <div class="card-content">
-                {% if user.is_authenticated %}
-                    <span class="card-label">Member Card</span>
-                    <h2>{{ user.first_name|default:user.email|default:user.username }}</h2>
-                    <p>歡迎回到嘎比嘎比孔雀魚會員中心</p>
-                {% else %}
-                    <span class="card-label">Guppy Member</span>
-                    <h2>嘎比嘎比會員卡</h2>
-                    <p>加入會員後即可累積點數與參加抽獎</p>
-                {% endif %}
+                <span class="card-label">Gabi Guppy Studio</span>
+                <h2>官方網站 × 會員中心</h2>
+                <p>最新消息、商品、店鋪、活動與會員服務一次整合。</p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="features">
+<section class="official-section official-news-section">
+    <div class="section-title section-title-row">
+        <div>
+            <p>Latest News</p>
+            <h2>最新消息</h2>
+            <span>品牌公告、新品到貨、飼育知識與活動提醒。</span>
+        </div>
+        <a href="{% url 'news_list' %}" class="text-link">查看全部消息</a>
+    </div>
+
+    <div class="official-card-grid news-card-grid">
+        {% for post in latest_news %}
+            <article class="official-card news-card">
+                <div class="official-card-icon">{{ post.cover_emoji }}</div>
+                <div class="official-card-meta">
+                    <span>{{ post.get_category_display }}</span>
+                    <time datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|date:"Y.m.d" }}</time>
+                </div>
+                <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+                <p>{{ post.summary }}</p>
+                <a href="{{ post.get_absolute_url }}" class="card-link">閱讀更多</a>
+            </article>
+        {% empty %}
+            <div class="empty-state official-empty-state">
+                <h3>最新消息準備中</h3>
+                <p>可到後台新增消息，前台會自動顯示在這裡。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="official-section official-products-section">
+    <div class="section-title section-title-row">
+        <div>
+            <p>Products</p>
+            <h2>我的商品</h2>
+            <span>以清楚照片、分類與狀態呈現商品，讓訪客更容易理解與詢問。</span>
+        </div>
+        <a href="{% url 'product_list' %}" class="text-link">查看全部商品</a>
+    </div>
+
+    <div class="official-card-grid product-card-grid">
+        {% for product in featured_products %}
+            <article class="official-card product-card">
+                <a href="{{ product.get_absolute_url }}" class="product-image-shell">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                    {% else %}
+                        <span class="product-image-placeholder">🐠</span>
+                    {% endif %}
+                </a>
+                <div class="official-card-meta">
+                    <span>{{ product.get_category_display }}</span>
+                    <span>{{ product.get_status_display }}</span>
+                </div>
+                <h3><a href="{{ product.get_absolute_url }}">{{ product.title }}</a></h3>
+                <p>{{ product.short_description }}</p>
+                {% if product.price_label %}<strong class="price-label">{{ product.price_label }}</strong>{% endif %}
+            </article>
+        {% empty %}
+            <div class="empty-state official-empty-state">
+                <h3>商品資料準備中</h3>
+                <p>可到後台新增商品並上傳商品圖片，首頁會自動帶入精選商品。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="official-section store-preview-section">
+    <div class="section-title section-title-row">
+        <div>
+            <p>Store Info</p>
+            <h2>店鋪資訊</h2>
+            <span>把營業時間、地址、聯絡方式與到店提醒整理成清楚的官方資訊。</span>
+        </div>
+        <a href="{% url 'store_info' %}" class="text-link">查看店鋪資訊</a>
+    </div>
+
+    <div class="store-preview-grid">
+        {% for store in stores %}
+            <article class="store-preview-card">
+                <span class="store-badge">{% if store.is_primary %}主要店鋪{% else %}店鋪資訊{% endif %}</span>
+                <h3>{{ store.name }}</h3>
+                {% if store.tagline %}<p class="store-tagline">{{ store.tagline }}</p>{% endif %}
+                <div class="store-info-list">
+                    {% if store.address %}<span>📍 {{ store.address }}</span>{% endif %}
+                    {% if store.phone %}<span>☎ {{ store.phone }}</span>{% endif %}
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state official-empty-state">
+                <h3>店鋪資訊準備中</h3>
+                <p>可到後台新增店鋪資訊，前台會自動呈現。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="features official-member-feature-section">
     <div class="section-title">
-        <p>Member Benefits</p>
-        <h2>嘎比嘎比會員可以做什麼？</h2>
+        <p>Member Center</p>
+        <h2>會員中心可以做什麼？</h2>
+        <span>會員功能維持完整，但收進更清楚的會員中心層級。</span>
     </div>
 
     <div class="feature-grid">
@@ -87,9 +174,9 @@
         </div>
 
         <div class="feature-card">
-            <span>🐬</span>
-            <h3>活動通知</h3>
-            <p>收到品牌活動、玩家交流、抽獎與會員限定消息。</p>
+            <span>🎁</span>
+            <h3>會員抽獎</h3>
+            <p>使用點數參加抽獎，並用 QR Code 讓店員快速核銷。</p>
         </div>
 
         <div class="feature-card">

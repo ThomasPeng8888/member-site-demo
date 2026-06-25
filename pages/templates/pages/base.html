@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>{% block title %}嘎比嘎比孔雀魚｜會員中心{% endblock %}</title>
+    <title>{% block title %}嘎比嘎比孔雀魚｜官方網站{% endblock %}</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta
         name="description"
-        content="{% block meta_description %}嘎比嘎比孔雀魚會員中心提供會員註冊、點數查詢、票券管理、活動資訊、會員抽獎與專屬優惠。{% endblock %}"
+        content="{% block meta_description %}嘎比嘎比孔雀魚官方網站提供最新消息、商品資訊、店鋪資訊、活動專區與會員中心服務。{% endblock %}"
     >
     <meta name="robots" content="{% block robots %}index,follow{% endblock %}">
 
@@ -17,10 +17,10 @@
 
     <meta property="og:site_name" content="嘎比嘎比孔雀魚">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:title" content="{% block og_title %}嘎比嘎比孔雀魚｜會員中心{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}嘎比嘎比孔雀魚｜官方網站{% endblock %}">
     <meta
         property="og:description"
-        content="{% block og_description %}輕鬆加入嘎比嘎比孔雀魚會員，查詢點數、票券、活動、抽獎與專屬優惠。{% endblock %}"
+        content="{% block og_description %}探索嘎比嘎比孔雀魚最新消息、精選商品、店鋪資訊、活動與會員服務。{% endblock %}"
     >
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
 
@@ -29,7 +29,7 @@
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "嘎比嘎比孔雀魚",
-        "description": "嘎比嘎比孔雀魚會員中心，提供會員註冊、點數查詢、票券管理、活動資訊、會員抽獎與專屬優惠。",
+        "description": "嘎比嘎比孔雀魚官方網站，提供最新消息、商品資訊、店鋪資訊、活動專區與會員中心服務。",
         "url": "{{ request.scheme }}://{{ request.get_host }}/"
     }
     </script>
@@ -67,8 +67,22 @@
         </button>
 
         <nav class="nav" id="site-nav" data-site-nav aria-label="主選單">
-            <div class="nav-primary-links">
+            <div class="nav-primary-links official-nav-links">
                 <a href="{% url 'home' %}">首頁</a>
+                <a href="{% url 'news_list' %}">最新消息</a>
+                <a href="{% url 'product_list' %}">我的商品</a>
+                <a href="{% url 'store_info' %}">店鋪資訊</a>
+
+                <details class="nav-dropdown nav-dropdown-primary nav-activity-center">
+                    <summary>活動專區</summary>
+                    <div class="nav-dropdown-menu">
+                        <a href="{% url 'activities' %}">活動資訊</a>
+                        <a href="{% url 'campaign_list' %}">活動抽獎</a>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'my_campaigns' %}">我的活動抽獎</a>
+                        {% endif %}
+                    </div>
+                </details>
 
                 <details class="nav-dropdown nav-dropdown-primary nav-member-center">
                     <summary>會員中心</summary>
@@ -95,23 +109,10 @@
                         {% endif %}
                     </div>
                 </details>
-
-                <details class="nav-dropdown nav-dropdown-primary nav-activity-center">
-                    <summary>活動專區</summary>
-                    <div class="nav-dropdown-menu">
-                        <a href="{% url 'activities' %}">活動資訊</a>
-                        <a href="{% url 'campaign_list' %}">活動抽獎</a>
-                        {% if user.is_authenticated %}
-                            <a href="{% url 'my_campaigns' %}">我的活動抽獎</a>
-                        {% endif %}
-                    </div>
-                </details>
             </div>
 
             <div class="nav-account-links">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'dashboard' %}" class="nav-button nav-member-shortcut">會員資料</a>
-
                     {% if can_access_staff_tools or can_manage_campaigns %}
                         <details class="nav-dropdown nav-dropdown-staff">
                             <summary>店員工具</summary>

@@ -1,0 +1,41 @@
+{% extends "pages/base.html" %}
+
+{% block title %}我的商品｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}查看嘎比嘎比孔雀魚精選商品，包含孔雀魚、飼料、水族用品、服務與套組。{% endblock %}
+{% block og_title %}我的商品｜嘎比嘎比孔雀魚{% endblock %}
+
+{% block content %}
+<section class="official-page product-page">
+    <div class="section-title official-page-title">
+        <p>Products</p>
+        <h1>我的商品</h1>
+        <span>以圖片、分類、狀態與說明呈現商品，方便新朋友快速認識與詢問。</span>
+    </div>
+
+    <div class="official-card-grid product-card-grid">
+        {% for product in products %}
+            <article class="official-card product-card">
+                <a href="{{ product.get_absolute_url }}" class="product-image-shell">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                    {% else %}
+                        <span class="product-image-placeholder">🐠</span>
+                    {% endif %}
+                </a>
+                <div class="official-card-meta">
+                    <span>{{ product.get_category_display }}</span>
+                    <span>{{ product.get_status_display }}</span>
+                </div>
+                <h3><a href="{{ product.get_absolute_url }}">{{ product.title }}</a></h3>
+                <p>{{ product.short_description }}</p>
+                {% if product.price_label %}<strong class="price-label">{{ product.price_label }}</strong>{% endif %}
+            </article>
+        {% empty %}
+            <div class="empty-state official-empty-state">
+                <h3>目前尚無公開商品</h3>
+                <p>請先到後台新增「我的商品」，並設定為公開。</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
