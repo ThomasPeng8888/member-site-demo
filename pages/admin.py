@@ -1,8 +1,20 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 
 from .image_utils import apply_brand_watermark_to_image_field
 from .models import NewsPost, Product, StoreInfo
+
+
+class ProductAdminForm(forms.ModelForm):
+    crop_x = forms.FloatField(required=False, widget=forms.HiddenInput)
+    crop_y = forms.FloatField(required=False, widget=forms.HiddenInput)
+    crop_w = forms.FloatField(required=False, widget=forms.HiddenInput)
+    crop_h = forms.FloatField(required=False, widget=forms.HiddenInput)
+
+    class Meta:
+        model = Product
+        fields = "__all__"
 
 
 @admin.register(NewsPost)
@@ -27,6 +39,7 @@ class NewsPostAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = (
         "title",
         "category",
@@ -45,9 +58,27 @@ class ProductAdmin(admin.ModelAdmin):
     actions = ("apply_watermark_to_selected",)
     fieldsets = (
         ("基本資料", {"fields": ("title", "slug", "category", "short_description", "description")} ),
-        ("商品圖片與價格", {"fields": ("image", "image_preview", "price_label")} ),
+        (
+            "商品圖片與價格",
+            {
+                "fields": (
+                    "image",
+                    "crop_x",
+                    "crop_y",
+                    "crop_w",
+                    "crop_h",
+                    "image_preview",
+                    "price_label",
+                ),
+                "description": "上傳商品圖後，可在下方拖曳正方形裁切框；儲存時系統會裁成正方形、壓縮圖片，並套用嘎比嘎比孔雀魚浮水印。",
+            },
+        ),
         ("前台顯示", {"fields": ("status", "is_featured", "is_published", "sort_order")} ),
     )
+
+    class Media:
+        css = {"all": ("pages/admin/product_cropper.css",)}
+        js = ("pages/admin/product_cropper.js",)
 
     @admin.display(description="圖片預覽")
     def image_preview(self, obj):
@@ -57,6 +88,17 @@ class ProductAdmin(admin.ModelAdmin):
             '<img src="{}" style="width: 72px; height: 72px; object-fit: cover; border-radius: 14px;" alt="" />',
             obj.image.url,
         )
+
+    def save_model(self, request, obj, form, change):
+        crop_box = {
+            "x": form.cleaned_data.get("crop_x"),
+            "y": form.cleaned_data.get("crop_y"),
+            "w": form.cleaned_data.get("crop_w"),
+            "h": form.cleaned_data.get("crop_h"),
+        }
+        if all(value is not None for value in crop_box.values()):
+            obj._product_crop_box = crop_box
+        super().save_model(request, obj, form, change)
 
     @admin.action(description="重新套用嘎比嘎比孔雀魚浮水印")
     def apply_watermark_to_selected(self, request, queryset):

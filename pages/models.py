@@ -80,7 +80,7 @@ class Product(models.Model):
         upload_to="products/",
         blank=True,
         verbose_name="商品圖片",
-        help_text="目前前台先顯示一張主圖。建議上傳橫式或方形清晰照片。",
+        help_text="目前前台先顯示一張主圖。後台會提供正方形裁切工具，系統會自動壓縮為適合網頁瀏覽的大小，並加入淡淡品牌浮水印。",
     )
     price_label = models.CharField(
         max_length=60,
@@ -127,7 +127,8 @@ class Product(models.Model):
         if should_watermark and self.image:
             from .image_utils import apply_brand_watermark_to_image_field
 
-            image_name_changed = apply_brand_watermark_to_image_field(self.image)
+            crop_box = getattr(self, "_product_crop_box", None)
+            image_name_changed = apply_brand_watermark_to_image_field(self.image, crop_box=crop_box)
             if image_name_changed and self.pk:
                 type(self).objects.filter(pk=self.pk).update(image=self.image.name)
 
