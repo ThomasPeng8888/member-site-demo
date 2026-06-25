@@ -103,7 +103,7 @@ class Product(models.Model):
     class Meta:
         ordering = ["sort_order", "-is_featured", "-created_at", "-id"]
         verbose_name = "商品"
-        verbose_name_plural = "我的商品"
+        verbose_name_plural = "商品資訊"
 
     def __str__(self):
         return self.title

@@ -1,14 +1,14 @@
 {% extends "pages/base.html" %}
 
-{% block title %}我的商品｜嘎比嘎比孔雀魚{% endblock %}
+{% block title %}商品資訊｜嘎比嘎比孔雀魚{% endblock %}
 {% block meta_description %}查看嘎比嘎比孔雀魚精選商品，包含孔雀魚、飼料、水族用品、服務與套組。{% endblock %}
-{% block og_title %}我的商品｜嘎比嘎比孔雀魚{% endblock %}
+{% block og_title %}商品資訊｜嘎比嘎比孔雀魚{% endblock %}
 
 {% block content %}
 <section class="official-page product-page">
     <div class="section-title official-page-title">
         <p>Products</p>
-        <h1>我的商品</h1>
+        <h1>商品資訊</h1>
         <span>以圖片、分類、狀態與說明呈現商品，方便新朋友快速認識與詢問。</span>
     </div>
 
@@ -33,7 +33,11 @@
         {% empty %}
             <div class="empty-state official-empty-state">
                 <h3>目前尚無公開商品</h3>
-                <p>請先到後台新增「我的商品」，並設定為公開。</p>
+                {% if user.is_staff %}
+                    <p>請先到 Django 後台新增「商品資訊」，並設定為公開。</p>
+                {% else %}
+                    <p>商品資訊正在整理中，歡迎稍後再回來看看。</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

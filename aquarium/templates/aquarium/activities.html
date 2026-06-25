@@ -37,7 +37,11 @@
             <div class="empty-state">
                 <span>🐠</span>
                 <h2>目前尚未建立活動</h2>
-                <p>你可以到 Django 後台新增第一個嘎比嘎比活動。</p>
+                {% if user.is_staff %}
+                    <p>你可以到 Django 後台新增第一個嘎比嘎比活動。</p>
+                {% else %}
+                    <p>近期活動正在安排中，歡迎稍後再回來看看。</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

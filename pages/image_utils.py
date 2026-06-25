@@ -238,13 +238,12 @@ def apply_brand_watermark_to_image_field(image_field, crop_box=None) -> bool:
     overlay = Image.new("RGBA", base.size, (255, 255, 255, 0))
     min_edge = min(width, height)
 
-    # 1) Center diagonal text: slightly stronger than the first version so it is
-    #    actually visible as brand protection, but still soft enough to preserve
-    #    guppy color, fin shape, and product texture.
+    # 1) Center diagonal text: stronger than the previous version so it remains visible even on darker fish photos,
+    #    while still being gentle enough to preserve color, fin detail, and the overall shopping experience.
     if min_edge >= 420:
         center_width = min(int(width * 0.64), int(height * 1.1), 920)
         center_mark = _resize_to_width(watermark_source, center_width)
-        center_mark = _apply_alpha(center_mark, 0.16)
+        center_mark = _apply_alpha(center_mark, 0.22)
         center_mark = center_mark.rotate(-18, expand=True, resample=Image.Resampling.BICUBIC)
         center_position = ((width - center_mark.width) // 2, (height - center_mark.height) // 2)
         overlay.alpha_composite(center_mark, dest=center_position)
@@ -253,7 +252,7 @@ def apply_brand_watermark_to_image_field(image_field, crop_box=None) -> bool:
     #    modest and away from the central product subject.
     corner_width = min(max(int(width * 0.26), 150), 360)
     corner_mark = _resize_to_width(watermark_source, corner_width)
-    corner_mark = _apply_alpha(corner_mark, 0.25)
+    corner_mark = _apply_alpha(corner_mark, 0.22)
     margin = max(16, int(min_edge * 0.035))
     corner_position = (
         max(margin, width - corner_mark.width - margin),

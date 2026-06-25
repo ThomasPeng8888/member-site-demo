@@ -75,7 +75,11 @@
             <div class="empty-state">
                 <span>🐠</span>
                 <h2>目前沒有可抽獎項</h2>
-                <p>請到 Django 後台新增獎項，或確認獎項已啟用且有庫存。</p>
+                {% if user.is_staff %}
+                    <p>請到 Django 後台新增獎項，或確認獎項已啟用且有庫存。</p>
+                {% else %}
+                    <p>會員抽獎獎項正在準備中，歡迎稍後再回來看看。</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

@@ -1,13 +1,13 @@
 {% extends "pages/base.html" %}
 
-{% block title %}{{ product.title }}｜我的商品｜嘎比嘎比孔雀魚{% endblock %}
+{% block title %}{{ product.title }}｜商品資訊｜嘎比嘎比孔雀魚{% endblock %}
 {% block meta_description %}{{ product.short_description }}{% endblock %}
 {% block og_title %}{{ product.title }}｜嘎比嘎比孔雀魚{% endblock %}
 {% block og_description %}{{ product.short_description }}{% endblock %}
 
 {% block content %}
 <section class="official-detail-page product-detail-page">
-    <a href="{% url 'product_list' %}" class="text-link">← 回我的商品</a>
+    <a href="{% url 'product_list' %}" class="text-link">← 回商品資訊</a>
     <div class="product-detail-layout">
         <div class="product-detail-media">
             {% if product.image %}

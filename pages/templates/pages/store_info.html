@@ -56,7 +56,11 @@
         {% empty %}
             <div class="empty-state official-empty-state">
                 <h3>店鋪資訊準備中</h3>
-                <p>請先到後台新增「店鋪資訊」，並設定為公開。</p>
+                {% if user.is_staff %}
+                    <p>請先到 Django 後台新增「店鋪資訊」，並設定為公開。</p>
+                {% else %}
+                    <p>店鋪資訊正在整理中，歡迎稍後再回來看看。</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

@@ -27,7 +27,11 @@
         {% empty %}
             <div class="empty-state official-empty-state">
                 <h3>目前尚無公開消息</h3>
-                <p>請先到後台新增「最新消息」，並設定為公開。</p>
+                {% if user.is_staff %}
+                    <p>請先到 Django 後台新增「最新消息」，並設定為公開。</p>
+                {% else %}
+                    <p>最新消息正在整理中，歡迎稍後再回來看看。</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

@@ -16,7 +16,7 @@
         </p>
 
         <div class="hero-actions">
-            <a href="{% url 'product_list' %}" class="btn btn-primary">瀏覽我的商品</a>
+            <a href="{% url 'product_list' %}" class="btn btn-primary">瀏覽商品資訊</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" class="btn btn-secondary">前往會員中心</a>
             {% else %}
@@ -80,7 +80,11 @@
         {% empty %}
             <div class="empty-state official-empty-state">
                 <h3>最新消息準備中</h3>
-                <p>可到後台新增消息，前台會自動顯示在這裡。</p>
+                {% if user.is_staff %}
+                    <p>可到 Django 後台新增消息，前台會自動顯示在這裡。</p>
+                {% else %}
+                    <p>最新消息正在整理中，歡迎稍後再回來看看。</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
@@ -90,7 +94,7 @@
     <div class="section-title section-title-row">
         <div>
             <p>Products</p>
-            <h2>我的商品</h2>
+            <h2>商品資訊</h2>
             <span>以清楚照片、分類與狀態呈現商品，讓訪客更容易理解與詢問。</span>
         </div>
         <a href="{% url 'product_list' %}" class="text-link">查看全部商品</a>
@@ -117,7 +121,11 @@
         {% empty %}
             <div class="empty-state official-empty-state">
                 <h3>商品資料準備中</h3>
-                <p>可到後台新增商品並上傳商品圖片，首頁會自動帶入精選商品。</p>
+                {% if user.is_staff %}
+                    <p>可到 Django 後台新增商品並上傳商品圖片，首頁會自動帶入精選商品。</p>
+                {% else %}
+                    <p>商品資訊正在整理中，歡迎稍後再回來看看。</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
@@ -147,7 +155,11 @@
         {% empty %}
             <div class="empty-state official-empty-state">
                 <h3>店鋪資訊準備中</h3>
-                <p>可到後台新增店鋪資訊，前台會自動呈現。</p>
+                {% if user.is_staff %}
+                    <p>可到 Django 後台新增店鋪資訊，前台會自動呈現。</p>
+                {% else %}
+                    <p>店鋪資訊正在整理中，歡迎稍後再回來看看。</p>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
