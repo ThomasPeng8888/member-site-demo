@@ -83,6 +83,23 @@
                 <strong>{{ profile.phone|default:"尚未填寫" }}</strong>
             </div>
 
+            <details class="qr-toggle member-qr-toggle">
+                <summary>展開會員 QR Code</summary>
+                <div class="qr-panel">
+                    <img
+                        src="{% url 'member_qr_png' %}"
+                        alt="會員加點 QR Code"
+                        class="qr-code-img"
+                        loading="lazy"
+                    >
+                    <div class="qr-helper">
+                        <strong>給店員掃描快速加點</strong>
+                        <p>店員可使用 LINE 掃描此 QR Code，快速帶入會員編號，再輸入消費金額完成加點。</p>
+                        <small>會員編號：{{ profile.member_no }}</small>
+                    </div>
+                </div>
+            </details>
+
             <div class="profile-row">
                 <span>LINE 綁定</span>
                 {% if profile.line_user_id %}

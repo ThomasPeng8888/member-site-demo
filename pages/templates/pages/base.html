@@ -47,10 +47,11 @@
 
     <header class="site-header">
         <a href="{% url 'home' %}" class="brand" aria-label="回到嘎比嘎比孔雀魚首頁">
-            <span class="brand-icon" aria-hidden="true">🐠</span>
-            <span>
+            <span class="brand-logo-shell" aria-hidden="true">
+                <img src="{% static 'pages/images/gabi-logo.jpg' %}" alt="" class="brand-logo">
+            </span>
+            <span class="brand-wordmark">
                 <strong>嘎比嘎比孔雀魚</strong>
-                <small>會員中心</small>
             </span>
         </a>
 
@@ -66,38 +67,54 @@
         </button>
 
         <nav class="nav" id="site-nav" data-site-nav aria-label="主選單">
-            <a href="{% url 'home' %}">首頁</a>
-            <a href="{% url 'activities' %}">活動資訊</a>
-            <a href="{% url 'rewards' %}">會員優惠</a>
-            <a href="{% url 'lottery' %}">會員抽獎</a>
-            <a href="{% url 'campaign_list' %}">活動抽獎</a>
+            <div class="nav-primary-links">
+                <a href="{% url 'home' %}">首頁</a>
+                <a href="{% url 'lottery' %}">會員抽獎</a>
+                <a href="{% url 'campaign_list' %}">活動抽獎</a>
+                <a href="{% url 'activities' %}">活動資訊</a>
+                <a href="{% url 'rewards' %}">會員優惠</a>
+            </div>
 
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}">會員中心</a>
-                <a href="{% url 'tickets' %}">我的票券</a>
-                <a href="{% url 'my_prizes' %}">我的獎品</a>
-                <a href="{% url 'my_campaigns' %}">我的活動抽獎</a>
-                <a href="{% url 'points' %}">點數紀錄</a>
-                <a href="{% url 'line_settings' %}">LINE 綁定</a>
+            <div class="nav-account-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="nav-button">會員中心</a>
 
-                {% if can_access_staff_tools %}
-                    <a href="{% url 'staff_add_points' %}">店員加點</a>
-                    <a href="{% url 'staff_redeem' %}">抽獎核銷</a>
-                    <a href="{% url 'staff_campaign_redeem' %}">活動獎品核銷</a>
+                    <details class="nav-dropdown">
+                        <summary>我的功能</summary>
+                        <div class="nav-dropdown-menu">
+                            <a href="{% url 'tickets' %}">我的票券</a>
+                            <a href="{% url 'my_prizes' %}">我的獎品</a>
+                            <a href="{% url 'my_campaigns' %}">我的活動抽獎</a>
+                            <a href="{% url 'points' %}">點數紀錄</a>
+                            <a href="{% url 'line_settings' %}">LINE 綁定</a>
+                        </div>
+                    </details>
+
+                    {% if can_access_staff_tools or can_manage_campaigns %}
+                        <details class="nav-dropdown nav-dropdown-staff">
+                            <summary>店員工具</summary>
+                            <div class="nav-dropdown-menu">
+                                {% if can_access_staff_tools %}
+                                    <a href="{% url 'staff_add_points' %}">店員加點</a>
+                                    <a href="{% url 'staff_redeem' %}">抽獎核銷</a>
+                                    <a href="{% url 'staff_campaign_redeem' %}">活動獎品核銷</a>
+                                {% endif %}
+                                {% if can_manage_campaigns %}
+                                    <a href="{% url 'staff_campaign_list' %}">活動抽獎管理</a>
+                                {% endif %}
+                            </div>
+                        </details>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'logout' %}" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link-button">登出</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">登入</a>
+                    <a href="{% url 'register' %}" class="nav-button">加入會員</a>
                 {% endif %}
-
-                {% if can_manage_campaigns %}
-                    <a href="{% url 'staff_campaign_list' %}">活動抽獎管理</a>
-                {% endif %}
-
-                <form method="post" action="{% url 'logout' %}" class="logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="nav-link-button">登出</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">登入</a>
-                <a href="{% url 'register' %}" class="nav-button">加入會員</a>
-            {% endif %}
+            </div>
         </nav>
     </header>
 
@@ -122,13 +139,64 @@
     <script>
         const menuButton = document.querySelector("[data-menu-button]");
         const siteNav = document.querySelector("[data-site-nav]");
+        const navDropdowns = document.querySelectorAll(".nav-dropdown");
+
+        function closeOtherDropdowns(currentDropdown) {
+            navDropdowns.forEach((dropdown) => {
+                if (dropdown !== currentDropdown) {
+                    dropdown.removeAttribute("open");
+                }
+            });
+        }
+
+        function closeAllDropdowns() {
+            navDropdowns.forEach((dropdown) => {
+                dropdown.removeAttribute("open");
+            });
+        }
 
         if (menuButton && siteNav) {
             menuButton.addEventListener("click", () => {
                 const isOpen = siteNav.classList.toggle("is-open");
                 menuButton.setAttribute("aria-expanded", String(isOpen));
+
+                if (!isOpen) {
+                    closeAllDropdowns();
+                }
             });
         }
+
+        navDropdowns.forEach((dropdown) => {
+            dropdown.addEventListener("toggle", () => {
+                if (dropdown.open) {
+                    closeOtherDropdowns(dropdown);
+                }
+            });
+        });
+
+        document.addEventListener("click", (event) => {
+            const clickedInsideDropdown = event.target.closest(".nav-dropdown");
+            if (!clickedInsideDropdown) {
+                closeAllDropdowns();
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                closeAllDropdowns();
+            }
+        });
+
+        document.querySelectorAll(".nav-dropdown-menu a").forEach((link) => {
+            link.addEventListener("click", () => {
+                closeAllDropdowns();
+
+                if (siteNav && menuButton && siteNav.classList.contains("is-open")) {
+                    siteNav.classList.remove("is-open");
+                    menuButton.setAttribute("aria-expanded", "false");
+                }
+            });
+        });
     </script>
 </body>
 </html>

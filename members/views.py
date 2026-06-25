@@ -1,11 +1,14 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils import timezone
+from urllib.parse import urlencode
 
 from aquarium.models import Activity, MemberTicket, PointTransaction
 from .forms import MemberSignUpForm
 from .models import MemberProfile
+from .qr_utils import qr_png_response
 
 
 def register_page(request):
@@ -64,4 +67,15 @@ def dashboard(request):
             "recent_transactions": recent_transactions,
             "registered_activity_count": registered_activity_count,
         },
+    )
+
+@login_required
+def member_qr_png(request):
+    profile, _ = MemberProfile.objects.get_or_create(user=request.user)
+    staff_add_points_url = request.build_absolute_uri(
+        f"{reverse('staff_add_points')}?{urlencode({'keyword': profile.member_no})}"
+    )
+    return qr_png_response(
+        staff_add_points_url,
+        filename=f"gabi-member-{profile.member_no}.png",
     )

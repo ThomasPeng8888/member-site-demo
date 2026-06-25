@@ -7,6 +7,7 @@ urlpatterns = [
     path("campaigns/<slug:slug>/", views.campaign_detail, name="campaign_detail"),
     path("campaigns/<slug:slug>/register/", views.register_campaign, name="register_campaign"),
     path("my-campaigns/", views.my_campaigns, name="my_campaigns"),
+    path("my-campaigns/winners/<str:winner_id>/qr.png", views.campaign_winner_qr_png, name="campaign_winner_qr_png"),
 
     path("staff/campaigns/", views.staff_campaign_list, name="staff_campaign_list"),
     path("staff/campaigns/redeem/", views.staff_campaign_redeem, name="staff_campaign_redeem"),

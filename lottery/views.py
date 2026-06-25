@@ -1,6 +1,7 @@
 import logging
 import secrets
 from datetime import timedelta
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.db import transaction
@@ -15,6 +16,7 @@ from aquarium.models import PointTransaction
 from members.line_services import push_line_to_user
 from members.models import MemberProfile
 from members.permissions import can_access_staff_tools
+from members.qr_utils import qr_png_response
 
 from .models import LOTTERY_COST_POINTS, LotteryPrize, LotterySpin
 
@@ -174,6 +176,24 @@ def my_prizes(request):
             "spins": spins,
         },
     )
+
+@login_required
+def regular_prize_qr_png(request, spin_code):
+    queryset = LotterySpin.objects.filter(spin_code=spin_code)
+
+    if not can_access_staff_tools(request.user):
+        queryset = queryset.filter(user=request.user)
+
+    spin = get_object_or_404(queryset)
+    staff_redeem_url = request.build_absolute_uri(
+        f"{reverse('staff_redeem')}?{urlencode({'code': spin.redeem_code})}"
+    )
+
+    return qr_png_response(
+        staff_redeem_url,
+        filename=f"gabi-prize-{spin.redeem_code}.png",
+    )
+
 
 def staff_required(user):
     return can_access_staff_tools(user)

@@ -36,6 +36,24 @@
                     <strong>{{ spin.redeem_code }}</strong>
                 </div>
 
+                {% if spin.can_redeem %}
+                    <details class="qr-toggle">
+                        <summary>展開核銷 QR Code</summary>
+                        <div class="qr-panel compact">
+                            <img
+                                src="{% url 'regular_prize_qr_png' spin.spin_code %}"
+                                alt="{{ spin.prize_name }} 核銷 QR Code"
+                                class="qr-code-img"
+                                loading="lazy"
+                            >
+                            <div class="qr-helper">
+                                <strong>店員掃描後快速核銷</strong>
+                                <p>請出示此 QR Code 給店員。店員也可以維持原本方式手動輸入兌換碼。</p>
+                            </div>
+                        </div>
+                    </details>
+                {% endif %}
+
                 <div class="ticket-footer">
                     <span class="status-pill">{{ spin.get_coupon_status_display }}</span>
                     <span>到期日 {{ spin.expire_at|date:"Y/m/d H:i" }}</span>

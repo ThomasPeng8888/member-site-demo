@@ -28,6 +28,7 @@ def robots_txt(request):
         "Disallow: /my-prizes/",
         "Disallow: /my-campaigns/",
         "Disallow: /line/",
+        "Disallow: /member/qr.png",
         "Disallow: /staff/",
         "Disallow: /lottery/spin/",
         "",

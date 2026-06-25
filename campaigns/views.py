@@ -1,5 +1,6 @@
 import random
 from datetime import timedelta
+from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -12,6 +13,7 @@ from django.views.decorators.http import require_POST
 
 from members.line_services import push_line_to_user
 from members.permissions import can_access_staff_tools, can_manage_campaigns
+from members.qr_utils import qr_png_response
 
 from .models import Campaign, CampaignRegistration, CampaignWinner
 
@@ -156,6 +158,24 @@ def my_campaigns(request):
             "registrations": registrations,
             "winners": winners,
         },
+    )
+
+
+@login_required
+def campaign_winner_qr_png(request, winner_id):
+    queryset = CampaignWinner.objects.filter(winner_id=winner_id)
+
+    if not (can_access_staff_tools(request.user) or can_manage_campaigns(request.user)):
+        queryset = queryset.filter(user=request.user)
+
+    winner = get_object_or_404(queryset)
+    staff_redeem_url = request.build_absolute_uri(
+        f"{reverse('staff_campaign_redeem')}?{urlencode({'code': winner.redeem_code})}"
+    )
+
+    return qr_png_response(
+        staff_redeem_url,
+        filename=f"gabi-campaign-{winner.redeem_code}.png",
     )
 
 

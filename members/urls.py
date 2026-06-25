@@ -15,6 +15,7 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(), name="logout"),
     path("register/", views.register_page, name="register"),
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("member/qr.png", views.member_qr_png, name="member_qr_png"),
 
     path("line/settings/", line_views.line_settings, name="line_settings"),
     path("line/bind/", line_views.line_bind_start, name="line_bind_start"),
