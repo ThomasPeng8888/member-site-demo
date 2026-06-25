@@ -3204,10 +3204,24 @@ code {
 
 .product-image-shell img,
 .product-detail-media img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     display: block;
+}
+
+.product-image-shell > *,
+.product-detail-media > * {
+    position: relative;
+    z-index: 1;
+}
+
+.product-image-shell img,
+.product-detail-media img {
+    z-index: 0;
 }
 
 .product-image-placeholder,
@@ -3455,5 +3469,34 @@ code {
     .store-preview-card h3,
     .store-detail-card h2 {
         font-size: 26px;
+    }
+}
+
+
+/* Product image mobile/front-end hardening
+   Keeps product media square and stable on nested URLs and older mobile browsers. */
+@supports not (aspect-ratio: 1 / 1) {
+    .product-image-shell::before,
+    .product-detail-media::before {
+        content: "";
+        display: block;
+        padding-top: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .product-image-shell {
+        border-radius: 22px;
+        margin-bottom: 16px;
+    }
+
+    .product-detail-media {
+        width: 100%;
+        border-radius: 26px;
+    }
+
+    .product-image-placeholder,
+    .product-detail-placeholder {
+        font-size: clamp(46px, 18vw, 68px);
     }
 }

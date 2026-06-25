@@ -101,7 +101,7 @@
             <article class="official-card product-card">
                 <a href="{{ product.get_absolute_url }}" class="product-image-shell">
                     {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                        <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="lazy" decoding="async">
                     {% else %}
                         <span class="product-image-placeholder">🐠</span>
                     {% endif %}
