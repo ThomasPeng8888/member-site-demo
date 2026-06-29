@@ -1,7 +1,8 @@
 from xml.sax.saxutils import escape
 
+from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 
@@ -49,7 +50,10 @@ def home(request):
 
 
 def rewards(request):
-    return render(request, "pages/rewards.html")
+    messages.info(request, "此會員服務目前暫停使用，請改由會員抽獎或活動抽獎查看相關獎品資訊。")
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    return redirect("home")
 
 
 def news_list(request):
@@ -88,6 +92,7 @@ def robots_txt(request):
         "Disallow: /logout/",
         "Disallow: /register/",
         "Disallow: /tickets/",
+        "Disallow: /rewards/",
         "Disallow: /points/",
         "Disallow: /my-prizes/",
         "Disallow: /my-campaigns/",
@@ -110,7 +115,6 @@ def sitemap_xml(request):
         {"name": "store_info", "changefreq": "monthly", "priority": "0.8"},
         {"name": "activities", "changefreq": "weekly", "priority": "0.8"},
         {"name": "campaign_list", "changefreq": "weekly", "priority": "0.8"},
-        {"name": "rewards", "changefreq": "weekly", "priority": "0.7"},
     ]
 
     url_items = []

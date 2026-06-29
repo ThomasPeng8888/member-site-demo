@@ -1,7 +1,7 @@
 {% extends "pages/base.html" %}
 
 {% block title %}加入會員｜嘎比嘎比孔雀魚{% endblock %}
-{% block meta_description %}加入嘎比嘎比孔雀魚會員中心，建立會員資料並開始累積點數、參加抽獎與使用專屬優惠。{% endblock %}
+{% block meta_description %}加入嘎比嘎比孔雀魚會員中心，建立會員資料並開始累積點數、參加會員抽獎與活動抽獎。{% endblock %}
 {% block robots %}noindex,follow{% endblock %}
 
 {% block content %}
@@ -9,7 +9,7 @@
     <div class="auth-card">
         <p class="eyebrow">Join Us</p>
         <h1>加入嘎比嘎比孔雀魚</h1>
-        <p class="muted">建立會員資料，開始累積點數、參加抽獎與使用會員專屬優惠。</p>
+        <p class="muted">建立會員資料，開始累積點數、參加會員抽獎與活動抽獎。</p>
 
         <form method="post" class="form">
             {% csrf_token %}
