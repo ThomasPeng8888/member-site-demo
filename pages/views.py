@@ -27,6 +27,13 @@ def home(request):
     if not featured_products.exists():
         featured_products = visible_products_queryset()[:3]
 
+    carousel_products = list(
+        visible_products_queryset()
+        .filter(image__isnull=False)
+        .exclude(image="")
+        .order_by("-is_featured", "sort_order", "-created_at", "-id")[:5]
+    )
+
     stores = visible_stores_queryset()[:2]
 
     return render(
@@ -35,6 +42,7 @@ def home(request):
         {
             "latest_news": latest_news,
             "featured_products": featured_products,
+            "carousel_products": carousel_products,
             "stores": stores,
         },
     )

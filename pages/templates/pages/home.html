@@ -41,17 +41,62 @@
     </div>
 
     <div class="hero-card">
-        <div class="aquarium-card official-aquarium-card">
-            <div class="fish fish-a">🐟</div>
-            <div class="fish fish-b">🐠</div>
-            <div class="fish fish-c">🐡</div>
-            <div class="water-line"></div>
-            <div class="card-content">
-                <span class="card-label">GuppyGuppy Official</span>
-                <h2>官方網站 × 會員中心</h2>
-                <p>最新消息、商品、店鋪、活動與會員服務一次整合。</p>
+        {% if carousel_products %}
+            <section class="product-hero-carousel" data-product-carousel aria-label="精選商品輪播">
+                <div class="carousel-topline">
+                    <span>Featured Products</span>
+                    <strong>精選商品</strong>
+                </div>
+
+                <div class="product-carousel-stage">
+                    {% for product in carousel_products %}
+                        <a
+                            href="{{ product.get_absolute_url }}"
+                            class="product-hero-slide{% if forloop.first %} is-active{% endif %}"
+                            data-carousel-slide
+                            aria-label="查看商品：{{ product.title }}"
+                        >
+                            <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">
+                            <span class="hero-product-badge">{{ product.get_category_display }}</span>
+                            <div class="product-hero-caption">
+                                <span>{{ product.get_status_display }}</span>
+                                <h2>{{ product.title }}</h2>
+                                <p>{{ product.short_description }}</p>
+                                {% if product.price_label %}<strong>{{ product.price_label }}</strong>{% endif %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+
+                {% if carousel_products|length > 1 %}
+                    <button type="button" class="carousel-control carousel-control-prev" data-carousel-prev aria-label="上一張商品">‹</button>
+                    <button type="button" class="carousel-control carousel-control-next" data-carousel-next aria-label="下一張商品">›</button>
+                    <div class="carousel-dots" aria-label="商品輪播切換">
+                        {% for product in carousel_products %}
+                            <button
+                                type="button"
+                                class="carousel-dot{% if forloop.first %} is-active{% endif %}"
+                                data-carousel-dot
+                                aria-label="切換到第 {{ forloop.counter }} 張商品"
+                                aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+                            ></button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </section>
+        {% else %}
+            <div class="aquarium-card official-aquarium-card">
+                <div class="fish fish-a">🐟</div>
+                <div class="fish fish-b">🐠</div>
+                <div class="fish fish-c">🐡</div>
+                <div class="water-line"></div>
+                <div class="card-content">
+                    <span class="card-label">GuppyGuppy Official</span>
+                    <h2>官方網站 × 會員中心</h2>
+                    <p>最新消息、商品、店鋪、活動與會員服務一次整合。</p>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 </section>
 
@@ -198,4 +243,79 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (() => {
+        const carousels = document.querySelectorAll("[data-product-carousel]");
+
+        carousels.forEach((carousel) => {
+            const slides = Array.from(carousel.querySelectorAll("[data-carousel-slide]"));
+            const dots = Array.from(carousel.querySelectorAll("[data-carousel-dot]"));
+            const prevButton = carousel.querySelector("[data-carousel-prev]");
+            const nextButton = carousel.querySelector("[data-carousel-next]");
+            let currentIndex = 0;
+            let timerId = null;
+
+            if (slides.length <= 1) {
+                return;
+            }
+
+            const showSlide = (index) => {
+                currentIndex = (index + slides.length) % slides.length;
+
+                slides.forEach((slide, slideIndex) => {
+                    const isActive = slideIndex === currentIndex;
+                    slide.classList.toggle("is-active", isActive);
+                    slide.setAttribute("aria-hidden", String(!isActive));
+                    slide.setAttribute("tabindex", isActive ? "0" : "-1");
+                });
+
+                dots.forEach((dot, dotIndex) => {
+                    const isActive = dotIndex === currentIndex;
+                    dot.classList.toggle("is-active", isActive);
+                    dot.setAttribute("aria-current", isActive ? "true" : "false");
+                });
+            };
+
+            const stopAutoPlay = () => {
+                if (timerId) {
+                    window.clearInterval(timerId);
+                    timerId = null;
+                }
+            };
+
+            const startAutoPlay = () => {
+                stopAutoPlay();
+                timerId = window.setInterval(() => showSlide(currentIndex + 1), 5200);
+            };
+
+            prevButton?.addEventListener("click", () => {
+                showSlide(currentIndex - 1);
+                startAutoPlay();
+            });
+
+            nextButton?.addEventListener("click", () => {
+                showSlide(currentIndex + 1);
+                startAutoPlay();
+            });
+
+            dots.forEach((dot, dotIndex) => {
+                dot.addEventListener("click", () => {
+                    showSlide(dotIndex);
+                    startAutoPlay();
+                });
+            });
+
+            carousel.addEventListener("mouseenter", stopAutoPlay);
+            carousel.addEventListener("mouseleave", startAutoPlay);
+            carousel.addEventListener("focusin", stopAutoPlay);
+            carousel.addEventListener("focusout", startAutoPlay);
+
+            showSlide(0);
+            startAutoPlay();
+        });
+    })();
+</script>
 {% endblock %}
