@@ -17,6 +17,14 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def env_bool(name: str, default: bool = False) -> bool:
+    return os.getenv(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def strip_url_scheme(url: str) -> str:
+    return url.replace("https://", "", 1).replace("http://", "", 1).rstrip("/")
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -54,6 +62,11 @@ INSTALLED_APPS = [
     "lottery",
     "campaigns",
 ]
+
+USE_R2_MEDIA = env_bool("USE_R2_MEDIA", False)
+
+if USE_R2_MEDIA:
+    INSTALLED_APPS.append("storages")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -138,6 +151,48 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Optional Cloudflare R2 media storage.
+# Local development stays on MEDIA_ROOT by default. On Render, set USE_R2_MEDIA=True
+# and the R2_* variables so uploaded product images survive service sleep/redeploys.
+R2_ACCOUNT_ID = os.getenv("R2_ACCOUNT_ID", "").strip()
+R2_ACCESS_KEY_ID = os.getenv("R2_ACCESS_KEY_ID", "").strip()
+R2_SECRET_ACCESS_KEY = os.getenv("R2_SECRET_ACCESS_KEY", "").strip()
+R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME", "").strip()
+R2_ENDPOINT_URL = os.getenv("R2_ENDPOINT_URL", "").strip()
+R2_PUBLIC_URL = os.getenv("R2_PUBLIC_URL", "").strip().rstrip("/")
+
+if USE_R2_MEDIA:
+    if not R2_ENDPOINT_URL and R2_ACCOUNT_ID:
+        R2_ENDPOINT_URL = f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+
+    AWS_ACCESS_KEY_ID = R2_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY = R2_SECRET_ACCESS_KEY
+    AWS_STORAGE_BUCKET_NAME = R2_BUCKET_NAME
+    AWS_S3_ENDPOINT_URL = R2_ENDPOINT_URL
+    AWS_S3_REGION_NAME = "auto"
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+    AWS_S3_ADDRESSING_STYLE = "path"
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_FILE_OVERWRITE = True
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=604800, public",
+    }
+
+    if R2_PUBLIC_URL:
+        AWS_S3_CUSTOM_DOMAIN = strip_url_scheme(R2_PUBLIC_URL)
+        AWS_S3_URL_PROTOCOL = "https:"
+        MEDIA_URL = f"{R2_PUBLIC_URL}/media/"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "pages.storage_backends.R2MediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"

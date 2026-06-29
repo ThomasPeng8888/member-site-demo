@@ -10,7 +10,11 @@ urlpatterns = [
     path("", include("campaigns.urls")),
     path("", include("pages.urls")),
     path("admin/", admin.site.urls),
-    # MVP media support for product images uploaded in Django admin.
-    # For long-term production media storage, use persistent storage or an object storage service.
-    re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
 ]
+
+# Local media support for development. When Cloudflare R2 is enabled, uploaded
+# images are served by the public R2 URL instead of this Django media route.
+if not getattr(settings, "USE_R2_MEDIA", False):
+    urlpatterns.append(
+        re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT})
+    )
