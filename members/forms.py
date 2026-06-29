@@ -1,12 +1,9 @@
-from datetime import timedelta
-
-from django.utils import timezone
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 from .models import MemberProfile
-from aquarium.models import MemberTicket, PointTransaction
+from aquarium.models import PointTransaction
 
 class MemberSignUpForm(UserCreationForm):
     first_name = forms.CharField(
@@ -60,13 +57,6 @@ class MemberSignUpForm(UserCreationForm):
                 user=user,
                 phone=self.cleaned_data.get("phone", "").strip(),
                 points=100,
-            )
-
-            MemberTicket.objects.create(
-                user=user,
-                title="新會員迎賓入館券",
-                ticket_type="gift",
-                valid_until=timezone.localdate() + timedelta(days=30),
             )
 
             PointTransaction.objects.create(

@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from urllib.parse import urlencode
 
-from aquarium.models import Activity, MemberTicket, PointTransaction
+from aquarium.models import Activity, PointTransaction
 from .forms import MemberSignUpForm
 from .models import MemberProfile
 from .qr_utils import qr_png_response
@@ -43,11 +43,6 @@ def dashboard(request):
         starts_at__gte=timezone.now(),
     ).order_by("starts_at")[:3]
 
-    available_ticket_count = MemberTicket.objects.filter(
-        user=request.user,
-        status="available",
-    ).count()
-
     recent_transactions = PointTransaction.objects.filter(
         user=request.user,
     ).order_by("-created_at")[:5]
@@ -63,7 +58,6 @@ def dashboard(request):
             "profile": profile,
             "display_name": display_name,
             "upcoming_activities": upcoming_activities,
-            "available_ticket_count": available_ticket_count,
             "recent_transactions": recent_transactions,
             "registered_activity_count": registered_activity_count,
         },

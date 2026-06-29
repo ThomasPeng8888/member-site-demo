@@ -13,7 +13,6 @@ from members.permissions import can_access_staff_tools
 from .models import (
     Activity,
     ActivityRegistration,
-    MemberTicket,
     PointTransaction,
     StaffPointGrant,
 )
@@ -109,15 +108,8 @@ def join_activity(request, slug):
 
 @login_required
 def tickets(request):
-    ticket_list = MemberTicket.objects.filter(user=request.user)
-
-    return render(
-        request,
-        "aquarium/tickets.html",
-        {
-            "tickets": ticket_list,
-        },
-    )
+    messages.info(request, "票券功能目前暫停使用，請改由會員抽獎或活動抽獎查看相關獎品資訊。")
+    return redirect("dashboard")
 
 
 @login_required

@@ -1,7 +1,7 @@
 {% extends "pages/base.html" %}
 
 {% block title %}會員資料｜嘎比嘎比孔雀魚{% endblock %}
-{% block meta_description %}嘎比嘎比孔雀魚會員資料頁，查看個人會員編號、點數、票券、活動紀錄、抽獎獎品與 LINE 綁定狀態。{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚會員資料頁，查看個人會員編號、點數、活動紀錄、抽獎獎品與 LINE 綁定狀態。{% endblock %}
 {% block robots %}noindex,nofollow{% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
             <h1>嗨，{{ display_name }}！這裡是你的會員資料與專屬紀錄。</h1>
             <p class="muted">
                 會員編號：{{ profile.member_no }} ・ 
-                這裡會顯示會員點數、票券、活動、抽獎與 LINE 綁定狀態。
+                這裡會顯示會員點數、活動、抽獎與 LINE 綁定狀態。
             </p>
         </div>
 
@@ -24,12 +24,6 @@
             <span>⭐</span>
             <p>目前點數</p>
             <strong>{{ profile.points }}</strong>
-        </div>
-
-        <div class="stat-card">
-            <span>🎟️</span>
-            <p>可用票券</p>
-            <strong>{{ available_ticket_count }} 張</strong>
         </div>
 
         <div class="stat-card">
