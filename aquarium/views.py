@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 from django.db.models import F, Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 
 from members.line_services import push_line_to_user
@@ -11,8 +11,6 @@ from members.models import MemberProfile
 from members.permissions import can_access_staff_tools
 
 from .models import (
-    Activity,
-    ActivityRegistration,
     PointTransaction,
     StaffPointGrant,
 )
@@ -21,90 +19,20 @@ POINT_AMOUNT_UNIT = 300
 
 
 def activities(request):
-    activity_list = Activity.objects.filter(is_published=True).order_by("starts_at")
-
-    return render(
-        request,
-        "aquarium/activities.html",
-        {
-            "activities": activity_list,
-        },
-    )
+    messages.info(request, "活動報名功能目前暫停使用，請改由活動抽獎查看目前可參加的活動。")
+    return redirect("campaign_list")
 
 
 def activity_detail(request, slug):
-    activity = get_object_or_404(Activity, slug=slug, is_published=True)
-    user_registration = None
-
-    if request.user.is_authenticated:
-        user_registration = ActivityRegistration.objects.filter(
-            user=request.user,
-            activity=activity,
-            status="registered",
-        ).first()
-
-    return render(
-        request,
-        "aquarium/activity_detail.html",
-        {
-            "activity": activity,
-            "user_registration": user_registration,
-        },
-    )
+    messages.info(request, "活動報名功能目前暫停使用，請改由活動抽獎查看目前可參加的活動。")
+    return redirect("campaign_list")
 
 
 @login_required
 @require_POST
 def join_activity(request, slug):
-    activity = get_object_or_404(Activity, slug=slug, is_published=True)
-
-    with transaction.atomic():
-        if not activity.has_capacity:
-            messages.error(request, "這個活動目前已額滿。")
-            return redirect(activity.get_absolute_url())
-
-        registration, created = ActivityRegistration.objects.select_for_update().get_or_create(
-            user=request.user,
-            activity=activity,
-            defaults={"status": "registered"},
-        )
-
-        if not created and registration.status == "registered":
-            messages.info(request, "你已經報名過這個活動了。")
-            return redirect(activity.get_absolute_url())
-
-        if not created and registration.status == "cancelled":
-            registration.status = "registered"
-            registration.save(update_fields=["status"])
-
-        if activity.points_reward > 0 and not registration.reward_granted:
-            profile, _ = MemberProfile.objects.select_for_update().get_or_create(user=request.user)
-            profile.points = F("points") + activity.points_reward
-            profile.save(update_fields=["points", "updated_at"])
-            profile.refresh_from_db()
-
-            PointTransaction.objects.create(
-                user=request.user,
-                transaction_type="earn",
-                points=activity.points_reward,
-                title=f"報名活動：{activity.title}",
-                note=f"活動報名獲得 {activity.points_reward} 點",
-            )
-
-            registration.reward_granted = True
-            registration.save(update_fields=["reward_granted"])
-
-    push_line_to_user(
-        request.user,
-        (
-            "嘎比嘎比孔雀魚活動報名成功 🐠\n"
-            f"活動：{activity.title}\n"
-            f"時間：{activity.starts_at:%Y/%m/%d %H:%M}"
-        ),
-    )
-    messages.success(request, "報名成功！活動資訊已加入你的會員紀錄。")
-    return redirect(activity.get_absolute_url())
-
+    messages.info(request, "活動報名功能目前暫停使用，請改由活動抽獎查看目前可參加的活動。")
+    return redirect("campaign_list")
 
 @login_required
 def tickets(request):

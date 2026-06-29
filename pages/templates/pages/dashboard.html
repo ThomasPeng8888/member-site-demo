@@ -1,7 +1,7 @@
 {% extends "pages/base.html" %}
 
 {% block title %}會員資料｜嘎比嘎比孔雀魚{% endblock %}
-{% block meta_description %}嘎比嘎比孔雀魚會員資料頁，查看個人會員編號、點數、活動紀錄、抽獎獎品與 LINE 綁定狀態。{% endblock %}
+{% block meta_description %}嘎比嘎比孔雀魚會員資料頁，查看個人會員編號、點數、抽獎獎品與 LINE 綁定狀態。{% endblock %}
 {% block robots %}noindex,nofollow{% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
             <h1>嗨，{{ display_name }}！這裡是你的會員資料與專屬紀錄。</h1>
             <p class="muted">
                 會員編號：{{ profile.member_no }} ・ 
-                這裡會顯示會員點數、活動、抽獎與 LINE 綁定狀態。
+                這裡會顯示會員點數、會員抽獎、活動抽獎與 LINE 綁定狀態。
             </p>
         </div>
 
@@ -33,30 +33,48 @@
         </div>
 
         <div class="stat-card">
-            <span>📌</span>
-            <p>已報名活動</p>
-            <strong>{{ registered_activity_count }} 個</strong>
+            <span>💬</span>
+            <p>LINE 狀態</p>
+            {% if profile.line_user_id %}
+                <strong>已綁定</strong>
+            {% else %}
+                <strong>尚未綁定</strong>
+            {% endif %}
         </div>
     </div>
 
     <div class="content-grid">
         <div class="panel">
             <div class="panel-heading">
-                <h2>推薦活動</h2>
-                <a href="{% url 'activities' %}">全部活動</a>
+                <h2>常用功能</h2>
+                <a href="{% url 'campaign_list' %}">活動抽獎</a>
             </div>
 
-            {% for activity in upcoming_activities %}
-                <div class="activity-item">
-                    <span>{{ activity.image_emoji }}</span>
+            <div class="dashboard-action-list">
+                <a href="{% url 'lottery' %}" class="dashboard-action-item">
+                    <span>🎁</span>
                     <div>
-                        <strong>{{ activity.title }}</strong>
-                        <p>{{ activity.starts_at|date:"Y/m/d H:i" }} ・ {{ activity.location }}</p>
+                        <strong>會員抽獎</strong>
+                        <p>使用會員點數參加抽獎。</p>
                     </div>
-                </div>
-            {% empty %}
-                <p class="muted">目前尚未建立活動。</p>
-            {% endfor %}
+                </a>
+
+                <a href="{% url 'campaign_list' %}" class="dashboard-action-item">
+                    <span>🎉</span>
+                    <div>
+                        <strong>活動抽獎</strong>
+                        <p>查看目前開放報名的抽獎活動。</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'my_campaigns' %}" class="dashboard-action-item">
+                    <span>📋</span>
+                    <div>
+                        <strong>我的活動抽獎</strong>
+                        <p>查看已參加活動抽獎與中獎結果。</p>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <div class="panel">

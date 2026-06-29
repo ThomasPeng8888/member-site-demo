@@ -1,3 +1,4 @@
+from urllib.parse import quote
 from xml.sax.saxutils import escape
 
 from django.contrib import messages
@@ -7,6 +8,10 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .models import NewsPost, Product, StoreInfo
+
+
+LINE_OFFICIAL_URL = "https://lin.ee/xyjkhCZ"
+LINE_COMMUNITY_URL = "https://line.me/ti/g2/PrFURFAiw6w1_-Nmnx_m2noQ8uaPr5DxS3jeqg?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
 
 
 def published_news_queryset():
@@ -45,6 +50,7 @@ def home(request):
             "featured_products": featured_products,
             "carousel_products": carousel_products,
             "stores": stores,
+            "line_official_url": LINE_OFFICIAL_URL,
         },
     )
 
@@ -73,7 +79,24 @@ def product_list(request):
 
 def product_detail(request, slug):
     product = get_object_or_404(visible_products_queryset(), slug=slug)
-    return render(request, "pages/product_detail.html", {"product": product})
+    product_url = request.build_absolute_uri(product.get_absolute_url())
+    line_inquiry_text = (
+        f"您好，我想詢問這項商品：{product.title}\n"
+        f"商品頁：{product_url}\n"
+        "請問目前還可以預約或購買嗎？謝謝！"
+    )
+    line_share_url = f"https://line.me/R/msg/text/?{quote(line_inquiry_text)}"
+
+    return render(
+        request,
+        "pages/product_detail.html",
+        {
+            "product": product,
+            "line_official_url": LINE_OFFICIAL_URL,
+            "line_inquiry_text": line_inquiry_text,
+            "line_share_url": line_share_url,
+        },
+    )
 
 
 def store_info(request):
@@ -93,6 +116,7 @@ def robots_txt(request):
         "Disallow: /register/",
         "Disallow: /tickets/",
         "Disallow: /rewards/",
+        "Disallow: /activities/",
         "Disallow: /points/",
         "Disallow: /my-prizes/",
         "Disallow: /my-campaigns/",
@@ -113,7 +137,6 @@ def sitemap_xml(request):
         {"name": "news_list", "changefreq": "weekly", "priority": "0.9"},
         {"name": "product_list", "changefreq": "weekly", "priority": "0.9"},
         {"name": "store_info", "changefreq": "monthly", "priority": "0.8"},
-        {"name": "activities", "changefreq": "weekly", "priority": "0.8"},
         {"name": "campaign_list", "changefreq": "weekly", "priority": "0.8"},
     ]
 
@@ -159,24 +182,6 @@ def sitemap_xml(request):
                 """
             )
     except Exception:
-        pass
-
-    try:
-        from aquarium.models import Activity
-
-        for activity in Activity.objects.filter(is_published=True).only("slug"):
-            location = request.build_absolute_uri(activity.get_absolute_url())
-            url_items.append(
-                f"""
-                <url>
-                    <loc>{escape(location)}</loc>
-                    <changefreq>weekly</changefreq>
-                    <priority>0.7</priority>
-                </url>
-                """
-            )
-    except Exception:
-        # Keep sitemap available even during first deployment before migrations.
         pass
 
     try:

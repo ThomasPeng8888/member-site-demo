@@ -2,10 +2,9 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from urllib.parse import urlencode
 
-from aquarium.models import Activity, PointTransaction
+from aquarium.models import PointTransaction
 from .forms import MemberSignUpForm
 from .models import MemberProfile
 from .qr_utils import qr_png_response
@@ -38,18 +37,9 @@ def dashboard(request):
         or request.user.username
     )
 
-    upcoming_activities = Activity.objects.filter(
-        is_published=True,
-        starts_at__gte=timezone.now(),
-    ).order_by("starts_at")[:3]
-
     recent_transactions = PointTransaction.objects.filter(
         user=request.user,
     ).order_by("-created_at")[:5]
-
-    registered_activity_count = request.user.activity_registrations.filter(
-        status="registered",
-    ).count()
 
     return render(
         request,
@@ -57,9 +47,7 @@ def dashboard(request):
         {
             "profile": profile,
             "display_name": display_name,
-            "upcoming_activities": upcoming_activities,
             "recent_transactions": recent_transactions,
-            "registered_activity_count": registered_activity_count,
         },
     )
 

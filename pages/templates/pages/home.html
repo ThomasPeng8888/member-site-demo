@@ -11,16 +11,17 @@
         <p class="eyebrow">Guppy Official Site</p>
         <h1>專注孔雀魚選育，讓每一次交流都更安心、更有趣。</h1>
         <p class="hero-desc">
-            嘎比嘎比孔雀魚整合最新消息、精選商品、店鋪資訊、活動專區與會員中心，
-            讓新朋友能快速認識品牌，老會員也能輕鬆查詢點數、票券、抽獎與活動紀錄。
+            嘎比嘎比孔雀魚整合最新消息、精選商品、店鋪資訊、活動抽獎與會員中心，
+            讓新朋友能快速認識品牌，也能直接透過 LINE 詢問喜歡的商品。
         </p>
 
-        <div class="hero-actions">
+        <div class="hero-actions hero-conversion-actions">
             <a href="{% url 'product_list' %}" class="btn btn-primary">瀏覽商品資訊</a>
+            <a href="{{ line_official_url }}" class="btn btn-line" target="_blank" rel="noopener noreferrer">LINE 詢問商品</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}" class="btn btn-secondary">前往會員中心</a>
             {% else %}
-                <a href="{% url 'register' %}" class="btn btn-secondary">加入會員</a>
+                <a href="{% url 'register' %}" class="btn btn-secondary">加入會員抽獎</a>
             {% endif %}
         </div>
 
@@ -85,6 +86,23 @@
                     <p>最新消息、商品、店鋪、活動與會員服務一次整合。</p>
                 </div>
             </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="home-conversion-strip" aria-labelledby="home-conversion-title">
+    <div class="home-conversion-copy">
+        <p>Quick Action</p>
+        <h2 id="home-conversion-title">看到喜歡的孔雀魚，直接 LINE 詢問最快。</h2>
+        <span>商品展示、官方詢問與會員抽獎串成同一條路徑，讓訪客從欣賞到互動更順。</span>
+    </div>
+    <div class="home-conversion-actions">
+        <a href="{% url 'product_list' %}" class="btn btn-primary">查看商品</a>
+        <a href="{{ line_official_url }}" class="btn btn-line" target="_blank" rel="noopener noreferrer">加入 LINE 官方</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'lottery' %}" class="btn btn-secondary">會員抽獎</a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-secondary">加入會員</a>
         {% endif %}
     </div>
 </section>
@@ -258,27 +276,27 @@
 
     <div class="feature-grid">
         <div class="feature-card">
-            <span>🎟️</span>
-            <h3>票券管理</h3>
-            <p>查看尚未使用的門票、活動票券與入場紀錄。</p>
-        </div>
-
-        <div class="feature-card">
             <span>⭐</span>
             <h3>點數累積</h3>
-            <p>每次消費與參加活動都能累積會員點數。</p>
+            <p>每次消費都能累積會員點數，點數紀錄可在會員中心查詢。</p>
         </div>
 
         <div class="feature-card">
             <span>🎁</span>
             <h3>會員抽獎</h3>
-            <p>使用點數參加抽獎，並用 QR Code 讓店員快速核銷。</p>
+            <p>使用點數參加抽獎，並用 QR Code 讓店員快速核銷獎品。</p>
+        </div>
+
+        <div class="feature-card">
+            <span>🎉</span>
+            <h3>活動抽獎</h3>
+            <p>參加官方活動抽獎，查看報名狀態、中獎結果與兌換資訊。</p>
         </div>
 
         <div class="feature-card">
             <span>💬</span>
             <h3>LINE 查詢</h3>
-            <p>LINE 已可綁定，一鍵查詢點數、獎品與活動資訊。</p>
+            <p>LINE 已可綁定，一鍵查詢點數、獎品與活動抽獎資訊。</p>
         </div>
     </div>
 </section>

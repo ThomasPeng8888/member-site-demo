@@ -6,7 +6,7 @@
 {% block og_description %}{{ product.short_description }}{% endblock %}
 
 {% block content %}
-<section class="official-detail-page product-detail-page">
+<section class="official-detail-page product-detail-page product-conversion-page">
     <a href="{% url 'product_list' %}" class="text-link">← 回商品資訊</a>
     <div class="product-detail-layout">
         <div class="product-detail-media">
@@ -25,14 +25,107 @@
             <h1>{{ product.title }}</h1>
             <p class="official-detail-summary">{{ product.short_description }}</p>
             {% if product.price_label %}<strong class="price-label large">{{ product.price_label }}</strong>{% endif %}
+
+            <section class="product-inquiry-panel" aria-labelledby="product-inquiry-title">
+                <div class="product-inquiry-copy">
+                    <span class="product-inquiry-eyebrow">LINE 快速詢問</span>
+                    <h2 id="product-inquiry-title">喜歡這項商品嗎？直接詢問最方便。</h2>
+                    <p>點擊會開啟 LINE 官方帳號，並幫你複製商品名稱與商品頁連結，貼上後即可詢問庫存、預約或購買方式。</p>
+                </div>
+                <div class="product-inquiry-actions">
+                    <a
+                        href="{{ line_official_url }}"
+                        class="btn btn-line product-line-inquiry-btn"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-line-inquiry-copy
+                    >LINE 詢問此商品</a>
+                    <button type="button" class="btn btn-secondary btn-copy-inquiry" data-line-inquiry-copy>複製詢問文字</button>
+                </div>
+                <small class="line-copy-status" data-line-copy-status>建議用手機開啟，會直接跳到 LINE 官方帳號。</small>
+            </section>
+
             <div class="official-rich-text">
                 {{ product.description|linebreaks }}
             </div>
-            <div class="hero-actions detail-actions">
-                <a href="{% url 'store_info' %}" class="btn btn-primary">查看店鋪資訊</a>
-                {% if user.is_authenticated %}<a href="{% url 'line_settings' %}" class="btn btn-secondary">會員 / LINE 設定</a>{% else %}<a href="{% url 'register' %}" class="btn btn-secondary">加入會員</a>{% endif %}
+            <div class="hero-actions detail-actions product-secondary-actions">
+                <a href="{% url 'store_info' %}" class="btn btn-secondary">查看店鋪資訊</a>
+                {% if user.is_authenticated %}<a href="{% url 'line_settings' %}" class="btn btn-secondary">會員 / LINE 設定</a>{% else %}<a href="{% url 'register' %}" class="btn btn-secondary">加入會員抽獎</a>{% endif %}
             </div>
         </article>
     </div>
 </section>
+
+<div class="product-mobile-inquiry-bar" aria-label="商品快速詢問">
+    <a
+        href="{{ line_official_url }}"
+        class="product-mobile-inquiry-button"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-line-inquiry-copy
+    >LINE 詢問此商品</a>
+</div>
+
+{{ line_inquiry_text|json_script:"line-inquiry-text" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (() => {
+        const textNode = document.getElementById("line-inquiry-text");
+        const inquiryText = textNode ? JSON.parse(textNode.textContent) : "";
+        const triggers = document.querySelectorAll("[data-line-inquiry-copy]");
+        const status = document.querySelector("[data-line-copy-status]");
+
+        if (!inquiryText || !triggers.length) {
+            return;
+        }
+
+        const setStatus = (message, isSuccess = true) => {
+            if (!status) {
+                return;
+            }
+
+            status.textContent = message;
+            status.classList.toggle("is-success", isSuccess);
+            status.classList.toggle("is-warning", !isSuccess);
+        };
+
+        const fallbackCopy = () => {
+            const textarea = document.createElement("textarea");
+            textarea.value = inquiryText;
+            textarea.setAttribute("readonly", "readonly");
+            textarea.style.position = "fixed";
+            textarea.style.top = "-9999px";
+            document.body.appendChild(textarea);
+            textarea.select();
+            const success = document.execCommand("copy");
+            textarea.remove();
+            return success;
+        };
+
+        const copyInquiryText = async () => {
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(inquiryText);
+                    return true;
+                }
+                return fallbackCopy();
+            } catch (error) {
+                return fallbackCopy();
+            }
+        };
+
+        triggers.forEach((trigger) => {
+            trigger.addEventListener("click", async () => {
+                const copied = await copyInquiryText();
+                if (copied) {
+                    setStatus("已複製商品詢問文字，開啟 LINE 後可直接貼上詢問。", true);
+                } else {
+                    setStatus("若未自動複製，可手動複製商品名稱後到 LINE 詢問。", false);
+                }
+            });
+        });
+    })();
+</script>
 {% endblock %}

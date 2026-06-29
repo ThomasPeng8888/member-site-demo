@@ -109,7 +109,6 @@
                 <details class="nav-dropdown nav-dropdown-primary nav-activity-center">
                     <summary>活動專區</summary>
                     <div class="nav-dropdown-menu">
-                        <a href="{% url 'activities' %}">活動資訊</a>
                         <a href="{% url 'campaign_list' %}">活動抽獎</a>
                         {% if user.is_authenticated %}
                             <a href="{% url 'my_campaigns' %}">我的活動抽獎</a>
