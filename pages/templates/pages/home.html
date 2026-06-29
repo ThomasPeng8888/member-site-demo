@@ -42,12 +42,7 @@
 
     <div class="hero-card">
         {% if carousel_products %}
-            <section class="product-hero-carousel" data-product-carousel aria-label="精選商品輪播">
-                <div class="carousel-topline">
-                    <span>Featured Products</span>
-                    <strong>精選商品</strong>
-                </div>
-
+            <section class="product-hero-carousel product-hero-carousel-pure" data-product-carousel aria-label="商品照片輪播">
                 <div class="product-carousel-stage">
                     {% for product in carousel_products %}
                         <a
@@ -55,15 +50,9 @@
                             class="product-hero-slide{% if forloop.first %} is-active{% endif %}"
                             data-carousel-slide
                             aria-label="查看商品：{{ product.title }}"
+                            title="查看商品：{{ product.title }}"
                         >
                             <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">
-                            <span class="hero-product-badge">{{ product.get_category_display }}</span>
-                            <div class="product-hero-caption">
-                                <span>{{ product.get_status_display }}</span>
-                                <h2>{{ product.title }}</h2>
-                                <p>{{ product.short_description }}</p>
-                                {% if product.price_label %}<strong>{{ product.price_label }}</strong>{% endif %}
-                            </div>
                         </a>
                     {% endfor %}
                 </div>
