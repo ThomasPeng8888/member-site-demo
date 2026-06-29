@@ -42,7 +42,7 @@ class CampaignAdmin(admin.ModelAdmin):
         "register_end_at",
         "draw_executed_at",
     )
-    list_filter = ("status", "publish_flag", "auto_draw", "register_start_at", "register_end_at")
+    list_filter = ("status", "publish_flag", "register_start_at", "register_end_at")
     search_fields = ("campaign_id", "slug", "campaign_name", "prize_name", "campaign_desc")
     prepopulated_fields = {"slug": ("campaign_name",)}
     autocomplete_fields = ("created_by",)
@@ -85,7 +85,7 @@ class CampaignAdmin(admin.ModelAdmin):
             )
         }),
         ("規則與內部備註", {
-            "fields": ("eligibility_rule", "notes", "auto_draw")
+            "fields": ("eligibility_rule", "notes")
         }),
         ("建立資訊", {
             "fields": ("created_by", "created_by_name", "created_at", "updated_at")
