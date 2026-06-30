@@ -4664,3 +4664,184 @@ html {
         font-size: 15px;
     }
 }
+
+
+/* Floating contact shortcuts
+   Fixed lower-right LINE OA and Facebook inquiry buttons.
+   Keep them compact so they support conversion without covering product images or content. */
+.floating-contact-widget {
+    position: fixed;
+    right: clamp(12px, 2vw, 20px);
+    top: auto;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: none;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.floating-contact-btn {
+    --contact-accent: #1f6feb;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 50px;
+    min-height: 50px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #ffffff;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.06)),
+        var(--contact-accent);
+    box-shadow:
+        0 14px 28px rgba(24, 42, 104, 0.16),
+        0 5px 12px rgba(24, 42, 104, 0.12);
+    overflow: hidden;
+    pointer-events: auto;
+    transition:
+        width 0.24s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+.floating-contact-btn::before {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    pointer-events: none;
+}
+
+.floating-contact-line {
+    --contact-accent: #06c755;
+}
+
+.floating-contact-facebook {
+    --contact-accent: #1877f2;
+}
+
+.floating-contact-icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 50px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-align: center;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.14);
+}
+
+.floating-contact-line .floating-contact-icon {
+    font-size: 11px;
+    letter-spacing: -0.08em;
+}
+
+.floating-contact-facebook .floating-contact-icon {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 27px;
+    font-weight: 800;
+}
+
+.floating-contact-text {
+    display: inline-flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 48px 0 16px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(8px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.floating-contact-btn:hover,
+.floating-contact-btn:focus-visible {
+    width: 132px;
+    transform: translateX(-2px) translateY(-2px);
+    filter: saturate(1.05);
+    box-shadow:
+        0 18px 38px rgba(24, 42, 104, 0.2),
+        0 7px 16px rgba(24, 42, 104, 0.14);
+    outline: none;
+}
+
+.floating-contact-btn:hover .floating-contact-text,
+.floating-contact-btn:focus-visible .floating-contact-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 900px) {
+    .floating-contact-widget {
+        right: 10px;
+        bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+        gap: 8px;
+    }
+
+    .floating-contact-btn,
+    .floating-contact-icon {
+        width: 44px;
+        height: 44px;
+        min-height: 44px;
+    }
+
+    .floating-contact-line .floating-contact-icon {
+        font-size: 10px;
+    }
+
+    .floating-contact-facebook .floating-contact-icon {
+        font-size: 24px;
+    }
+
+    .floating-contact-text {
+        display: none;
+    }
+
+    .floating-contact-btn:hover,
+    .floating-contact-btn:focus-visible {
+        width: 44px;
+        transform: translateY(-2px);
+    }
+}
+
+@media (max-width: 420px) {
+    .floating-contact-widget {
+        right: 8px;
+        bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .floating-contact-btn,
+    .floating-contact-icon {
+        width: 42px;
+        height: 42px;
+        min-height: 42px;
+    }
+
+    .floating-contact-line .floating-contact-icon {
+        font-size: 9px;
+    }
+
+    .floating-contact-facebook .floating-contact-icon {
+        font-size: 23px;
+    }
+}
+
+@media print {
+    .floating-contact-widget {
+        display: none;
+    }
+}
+
