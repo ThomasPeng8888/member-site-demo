@@ -193,7 +193,7 @@
 
     <nav class="floating-contact-widget" aria-label="快速聯絡與私訊">
         <a
-            href="https://lin.ee/xyjkhCZ"
+            href="{{ line_official_url_global|default:'https://lin.ee/xyjkhCZ' }}"
             class="floating-contact-btn floating-contact-line"
             target="_blank"
             rel="noopener noreferrer"
@@ -203,7 +203,7 @@
             <span class="floating-contact-text">LINE 官方</span>
         </a>
         <a
-            href="https://www.facebook.com/share/1DKhwBxNJT/?mibextid=wwXIfr"
+            href="{{ facebook_messenger_url_global|default:'https://www.facebook.com/share/1DKhwBxNJT/?mibextid=wwXIfr' }}"
             class="floating-contact-btn floating-contact-facebook"
             target="_blank"
             rel="noopener noreferrer"

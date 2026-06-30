@@ -47,6 +47,14 @@ CSRF_TRUSTED_ORIGINS = [
     if origin.strip()
 ]
 
+
+# Public social/contact URLs
+LINE_OFFICIAL_URL = os.getenv("LINE_OFFICIAL_URL", "https://lin.ee/xyjkhCZ")
+FACEBOOK_PAGE_URL = os.getenv("FACEBOOK_PAGE_URL", "https://www.facebook.com/share/1DKhwBxNJT/?mibextid=wwXIfr")
+# Optional: set to a Messenger direct URL such as https://m.me/<page_username_or_id>.
+# If empty, floating FB contact falls back to FACEBOOK_PAGE_URL.
+FACEBOOK_MESSENGER_URL = os.getenv("FACEBOOK_MESSENGER_URL", "") or os.getenv("FB_MESSENGER_URL", "")
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -92,6 +100,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'members.context_processors.staff_tools',
+                'pages.context_processors.social_contact_links',
             ],
         },
     },
