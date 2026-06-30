@@ -4964,3 +4964,149 @@ html {
         font-size: clamp(25.5px, 7.1vw, 32px) !important;
     }
 }
+
+/* =========================================================
+   Final official-site typography tuning
+   - Increase navigation readability
+   - Keep brand wordmark confident but not crowded
+   - Reduce homepage hero slogan weight for a calmer, premium first view
+   ========================================================= */
+@media (min-width: 1181px) {
+    .nav a,
+    .nav-link-button,
+    .nav-dropdown summary {
+        font-size: 15.2px !important;
+        line-height: 1.18;
+        padding: 10px 13px !important;
+        letter-spacing: 0.01em;
+    }
+}
+
+.brand strong,
+.brand-wordmark strong {
+    font-size: clamp(27px, 1.88vw, 35px) !important;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+}
+
+.brand-tagline {
+    font-size: clamp(11px, 0.78vw, 12.8px) !important;
+    line-height: 1.08;
+    letter-spacing: 0.13em;
+}
+
+.official-hero .eyebrow {
+    font-size: 10.8px !important;
+    line-height: 1.35;
+    letter-spacing: 0.13em;
+    margin-bottom: 9px;
+    opacity: 0.78;
+}
+
+.official-hero h1 {
+    font-size: clamp(31px, 3.45vw, 47px) !important;
+    line-height: 1.18;
+    letter-spacing: -0.026em;
+    max-width: 650px;
+}
+
+.official-hero .hero-desc {
+    font-size: 16px !important;
+    line-height: 1.78;
+    max-width: 600px;
+}
+
+.official-hero .hero-actions .btn,
+.home-conversion-actions .btn {
+    font-size: 15px;
+    line-height: 1.2;
+}
+
+@media (max-width: 1280px) and (min-width: 901px) {
+    .nav a,
+    .nav-link-button,
+    .nav-dropdown summary {
+        font-size: 14.2px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .brand strong,
+    .brand-wordmark strong {
+        font-size: 27px !important;
+    }
+
+    .brand-tagline {
+        font-size: 10.8px !important;
+        letter-spacing: 0.11em;
+    }
+
+    .official-hero h1 {
+        font-size: clamp(30px, 3.55vw, 43px) !important;
+        max-width: 610px;
+    }
+}
+
+@media (max-width: 900px) {
+    .nav-dropdown summary,
+    .nav a,
+    .nav-link-button {
+        font-size: 15px !important;
+        line-height: 1.25;
+    }
+
+    .brand strong,
+    .brand-wordmark strong {
+        font-size: clamp(20px, 5vw, 27px) !important;
+        letter-spacing: -0.035em;
+    }
+
+    .brand-tagline {
+        font-size: clamp(9.4px, 2.35vw, 11px) !important;
+        letter-spacing: 0.09em;
+    }
+
+    .official-hero .eyebrow {
+        font-size: 10px !important;
+        letter-spacing: 0.115em;
+        margin-bottom: 7px;
+    }
+
+    .official-hero h1 {
+        font-size: clamp(26px, 7vw, 33px) !important;
+        line-height: 1.17;
+        letter-spacing: -0.024em;
+        max-width: 100%;
+    }
+
+    .official-hero .hero-desc {
+        font-size: 15px !important;
+        line-height: 1.75;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand strong,
+    .brand-wordmark strong {
+        font-size: clamp(17px, 5vw, 19.5px) !important;
+    }
+
+    .brand-tagline {
+        font-size: clamp(8.4px, 2.3vw, 9.6px) !important;
+        letter-spacing: 0.075em;
+    }
+
+    .official-hero h1 {
+        font-size: clamp(24px, 6.45vw, 29px) !important;
+    }
+
+    .official-hero .hero-desc {
+        font-size: 14.6px !important;
+    }
+
+    .official-hero .hero-actions .btn,
+    .home-conversion-actions .btn {
+        font-size: 14.6px;
+        min-height: 46px;
+    }
+}
