@@ -95,8 +95,18 @@ class Product(models.Model):
         verbose_name="商品狀態",
     )
     is_featured = models.BooleanField(default=False, verbose_name="首頁精選")
+    show_on_homepage = models.BooleanField(
+        default=False,
+        verbose_name="顯示於首頁輪播",
+        help_text="勾選後會優先出現在首頁上方商品照片輪播，可用首頁輪播排序控制順序。",
+    )
+    homepage_order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="首頁輪播排序",
+        help_text="數字越小越前面；只影響首頁輪播，不影響商品列表排序。",
+    )
     is_published = models.BooleanField(default=True, verbose_name="是否公開")
-    sort_order = models.PositiveIntegerField(default=0, verbose_name="排序，數字越小越前面")
+    sort_order = models.PositiveIntegerField(default=0, verbose_name="商品列表排序，數字越小越前面")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="建立時間")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="更新時間")
 

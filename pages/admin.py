@@ -46,14 +46,16 @@ class ProductAdmin(admin.ModelAdmin):
         "status",
         "price_label",
         "is_featured",
+        "show_on_homepage",
+        "homepage_order",
         "is_published",
         "sort_order",
         "image_preview",
     )
-    list_filter = ("category", "status", "is_featured", "is_published")
+    list_filter = ("category", "status", "is_featured", "show_on_homepage", "is_published")
     search_fields = ("title", "short_description", "description", "price_label")
     prepopulated_fields = {"slug": ("title",)}
-    list_editable = ("status", "is_featured", "is_published", "sort_order")
+    list_editable = ("status", "is_featured", "show_on_homepage", "homepage_order", "is_published", "sort_order")
     readonly_fields = ("image_preview",)
     actions = ("apply_watermark_to_selected",)
     fieldsets = (
@@ -73,7 +75,20 @@ class ProductAdmin(admin.ModelAdmin):
                 "description": "上傳商品圖後，可在下方拖曳正方形裁切框；儲存時系統會裁成正方形、壓縮圖片，並套用嘎比嘎比孔雀魚浮水印。",
             },
         ),
-        ("前台顯示", {"fields": ("status", "is_featured", "is_published", "sort_order")} ),
+        (
+            "首頁與前台顯示",
+            {
+                "fields": (
+                    "status",
+                    "is_featured",
+                    "show_on_homepage",
+                    "homepage_order",
+                    "is_published",
+                    "sort_order",
+                ),
+                "description": "顯示於首頁輪播與首頁輪播排序用來控制首頁上方照片輪播；首頁精選與商品列表排序用於首頁商品卡片與商品列表。",
+            },
+        ),
     )
 
     class Media:

@@ -1,9 +1,18 @@
 {% extends "pages/base.html" %}
+{% load static %}
 
 {% block title %}{{ product.title }}｜商品資訊｜嘎比嘎比孔雀魚{% endblock %}
-{% block meta_description %}{{ product.short_description }}{% endblock %}
+{% block meta_description %}{{ product_share_description }}{% endblock %}
+{% block canonical_url %}{{ product_url }}{% endblock %}
+{% block og_type %}product{% endblock %}
 {% block og_title %}{{ product.title }}｜嘎比嘎比孔雀魚{% endblock %}
-{% block og_description %}{{ product.short_description }}{% endblock %}
+{% block og_description %}{{ product_share_description }}{% endblock %}
+{% block og_url %}{{ product_url }}{% endblock %}
+{% block og_image %}{% if product_share_image_url %}{{ product_share_image_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'pages/images/guppyguppy-og-default.jpg' %}{% endif %}{% endblock %}
+{% block twitter_image %}{% if product_share_image_url %}{{ product_share_image_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'pages/images/guppyguppy-og-default.jpg' %}{% endif %}{% endblock %}
+{% block og_image_alt %}{{ product.title }} 商品圖片｜嘎比嘎比孔雀魚{% endblock %}
+{% block twitter_title %}{{ product.title }}｜嘎比嘎比孔雀魚{% endblock %}
+{% block twitter_description %}{{ product_share_description }}{% endblock %}
 
 {% block content %}
 <section class="official-detail-page product-detail-page product-conversion-page">
@@ -67,6 +76,22 @@
 </div>
 
 {{ line_inquiry_text|json_script:"line-inquiry-text" }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{ product.title|escapejs }}",
+    "description": "{{ product_share_description|escapejs }}",
+    "url": "{{ product_url|escapejs }}"{% if product_share_image_url %},
+    "image": "{{ product_share_image_url|escapejs }}"{% endif %}{% if product.price_label %},
+    "offers": {
+        "@type": "Offer",
+        "availability": "{% if product.status == 'sold_out' %}https://schema.org/OutOfStock{% elif product.status == 'hidden' %}https://schema.org/Discontinued{% else %}https://schema.org/InStock{% endif %}",
+        "url": "{{ product_url|escapejs }}",
+        "priceCurrency": "TWD"
+    }{% endif %}
+}
+</script>
 {% endblock %}
 
 {% block extra_js %}

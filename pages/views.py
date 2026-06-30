@@ -26,6 +26,28 @@ def visible_stores_queryset():
     return StoreInfo.objects.filter(is_published=True)
 
 
+def absolute_media_url(request, url):
+    if not url:
+        return ""
+    if url.startswith(("http://", "https://")):
+        return url
+    return request.build_absolute_uri(url)
+
+
+def product_share_description(product):
+    status_note = ""
+    if product.status == "sold_out":
+        status_note = "此商品目前暫售完，也歡迎詢問類似品系。"
+    elif product.status == "limited":
+        status_note = "此商品為限量或預約商品，歡迎私訊詢問。"
+    else:
+        status_note = "歡迎私訊詢問庫存、預約或購買方式。"
+
+    base = product.short_description.strip() if product.short_description else "嘎比嘎比孔雀魚精選商品。"
+    text = f"{base} {status_note}"
+    return text[:155] + ("…" if len(text) > 155 else "")
+
+
 def home(request):
     latest_news = published_news_queryset()[:3]
     featured_products = visible_products_queryset().filter(is_featured=True)[:3]
@@ -33,12 +55,22 @@ def home(request):
     if not featured_products.exists():
         featured_products = visible_products_queryset()[:3]
 
-    carousel_products = list(
+    homepage_carousel_queryset = (
         visible_products_queryset()
-        .filter(image__isnull=False)
+        .filter(show_on_homepage=True, image__isnull=False)
         .exclude(image="")
-        .order_by("-is_featured", "sort_order", "-created_at", "-id")[:5]
+        .order_by("homepage_order", "sort_order", "-created_at", "-id")
     )
+
+    carousel_products = list(homepage_carousel_queryset[:5])
+
+    if not carousel_products:
+        carousel_products = list(
+            visible_products_queryset()
+            .filter(image__isnull=False)
+            .exclude(image="")
+            .order_by("-is_featured", "sort_order", "-created_at", "-id")[:5]
+        )
 
     stores = visible_stores_queryset()[:2]
 
@@ -80,6 +112,8 @@ def product_list(request):
 def product_detail(request, slug):
     product = get_object_or_404(visible_products_queryset(), slug=slug)
     product_url = request.build_absolute_uri(product.get_absolute_url())
+    product_image_url = absolute_media_url(request, product.image.url) if product.image else ""
+    share_description = product_share_description(product)
     line_inquiry_text = (
         f"您好，我想詢問這項商品：{product.title}\n"
         f"商品頁：{product_url}\n"
@@ -92,6 +126,9 @@ def product_detail(request, slug):
         "pages/product_detail.html",
         {
             "product": product,
+            "product_url": product_url,
+            "product_share_description": share_description,
+            "product_share_image_url": product_image_url,
             "line_official_url": LINE_OFFICIAL_URL,
             "line_inquiry_text": line_inquiry_text,
             "line_share_url": line_share_url,

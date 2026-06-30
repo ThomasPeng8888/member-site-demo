@@ -22,7 +22,13 @@
         property="og:description"
         content="{% block og_description %}探索嘎比嘎比孔雀魚最新消息、精選商品、店鋪資訊、活動與會員服務。{% endblock %}"
     >
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'pages/images/guppyguppy-og-default.jpg' %}{% endblock %}">
+    <meta property="og:image:alt" content="{% block og_image_alt %}嘎比嘎比孔雀魚 GuppyGuppy Official{% endblock %}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}嘎比嘎比孔雀魚｜官方網站{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}探索嘎比嘎比孔雀魚最新消息、精選商品、店鋪資訊、活動與會員服務。{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'pages/images/guppyguppy-og-default.jpg' %}{% endblock %}">
 
     <script type="application/ld+json">
     {
