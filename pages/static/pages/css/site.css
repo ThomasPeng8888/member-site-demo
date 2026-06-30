@@ -4853,3 +4853,114 @@ html {
     }
 }
 
+
+/* =========================================================
+   Header and homepage hero typography balance polish
+   - Make the header brand wordmark more confident
+   - Reduce homepage hero slogan scale so the visual weight balances with the logo
+   ========================================================= */
+.brand strong,
+.brand-wordmark strong {
+    font-size: clamp(28px, 2.05vw, 38px) !important;
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+}
+
+.brand-tagline {
+    font-size: clamp(11.5px, 0.86vw, 14px) !important;
+    line-height: 1.05;
+    letter-spacing: 0.14em;
+}
+
+.official-hero .eyebrow {
+    font-size: 11.5px;
+    letter-spacing: 0.11em;
+    margin-bottom: 10px;
+    opacity: 0.86;
+}
+
+.official-hero h1 {
+    font-size: clamp(36px, 4.15vw, 56px) !important;
+    line-height: 1.13;
+    letter-spacing: -0.035em;
+    max-width: 720px;
+}
+
+.official-hero .hero-desc {
+    font-size: 16.5px;
+    line-height: 1.76;
+    max-width: 620px;
+}
+
+@media (max-width: 1280px) and (min-width: 901px) {
+    .brand strong,
+    .brand-wordmark strong {
+        font-size: 28px !important;
+    }
+
+    .brand-tagline {
+        font-size: 11.2px !important;
+        letter-spacing: 0.12em;
+    }
+
+    .official-hero h1 {
+        font-size: clamp(34px, 4vw, 50px) !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .brand strong,
+    .brand-wordmark strong {
+        font-size: clamp(20px, 5.1vw, 28px) !important;
+        letter-spacing: -0.04em;
+    }
+
+    .brand-tagline {
+        font-size: clamp(9.5px, 2.5vw, 11.2px) !important;
+        letter-spacing: 0.10em;
+        max-width: 190px;
+    }
+
+    .official-hero .eyebrow {
+        font-size: 10.5px;
+        margin-bottom: 8px;
+    }
+
+    .official-hero h1 {
+        font-size: clamp(28px, 7.8vw, 36px) !important;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+    }
+
+    .official-hero .hero-desc {
+        font-size: 15.2px;
+        line-height: 1.75;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand {
+        gap: 9px;
+    }
+
+    .brand-logo-shell {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+    }
+
+    .brand strong,
+    .brand-wordmark strong {
+        font-size: clamp(17.5px, 5.2vw, 20px) !important;
+    }
+
+    .brand-tagline {
+        font-size: clamp(8.8px, 2.45vw, 10px) !important;
+        max-width: 160px;
+        letter-spacing: 0.08em;
+    }
+
+    .official-hero h1 {
+        font-size: clamp(25.5px, 7.1vw, 32px) !important;
+    }
+}
