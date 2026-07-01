@@ -11,6 +11,10 @@
         <h1>加入嘎比嘎比孔雀魚</h1>
         <p class="muted">建立會員資料，開始累積點數、參加會員抽獎與活動抽獎。</p>
 
+        {% include "pages/partials/social_login_buttons.html" %}
+
+        <div class="auth-divider"><span>或填寫 Email 建立帳號</span></div>
+
         <form method="post" class="form">
             {% csrf_token %}
 

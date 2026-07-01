@@ -1,0 +1,29 @@
+<div class="social-login-panel" aria-label="社群快速登入">
+    <p class="social-login-heading">快速登入 / 加入會員</p>
+    <div class="social-login-buttons">
+        {% if google_login_enabled_global %}
+            <a class="social-login-btn social-login-google" href="{% url 'social_google_start' %}{% if next %}?next={{ next|urlencode }}{% endif %}">
+                <span class="social-login-mark" aria-hidden="true">G</span>
+                <span>使用 Google 繼續</span>
+            </a>
+        {% else %}
+            <span class="social-login-btn social-login-disabled" title="Google 登入尚未啟用">
+                <span class="social-login-mark" aria-hidden="true">G</span>
+                <span>Google 登入尚未啟用</span>
+            </span>
+        {% endif %}
+
+        {% if line_login_enabled_global %}
+            <a class="social-login-btn social-login-line" href="{% url 'social_line_start' %}{% if next %}?next={{ next|urlencode }}{% endif %}">
+                <span class="social-login-mark" aria-hidden="true">LINE</span>
+                <span>使用 LINE 繼續</span>
+            </a>
+        {% else %}
+            <span class="social-login-btn social-login-disabled" title="LINE 登入尚未啟用">
+                <span class="social-login-mark" aria-hidden="true">LINE</span>
+                <span>LINE 登入尚未啟用</span>
+            </span>
+        {% endif %}
+    </div>
+    <p class="social-login-note">Google 會直接使用你的 Google Email；第一次使用 LINE 登入時，需補填 Email 建立會員資料。</p>
+</div>

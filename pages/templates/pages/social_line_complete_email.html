@@ -1,0 +1,77 @@
+{% extends "pages/base.html" %}
+
+{% block title %}完成 LINE 會員資料｜嘎比嘎比孔雀魚{% endblock %}
+{% block meta_description %}完成 LINE 快速登入所需的 Email 會員資料設定。{% endblock %}
+{% block robots %}noindex,nofollow{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card social-complete-card">
+        <p class="eyebrow">LINE Login</p>
+        <h1>完成會員資料</h1>
+        <p class="muted">
+            {% if line_display_name %}嗨，{{ line_display_name }}，{% endif %}
+            第一次使用 LINE 登入需要補填 Email，之後就可以直接用 LINE 快速登入。
+        </p>
+
+        <form method="post" class="form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <label>
+                姓名
+                <input
+                    type="text"
+                    name="first_name"
+                    value="{{ form.first_name.value|default:'' }}"
+                    placeholder="請輸入姓名"
+                    autocomplete="name"
+                >
+                {% for error in form.first_name.errors %}
+                    <small class="field-error">{{ error }}</small>
+                {% endfor %}
+            </label>
+
+            <label>
+                Email
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ form.email.value|default:'' }}"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+                {% for error in form.email.errors %}
+                    <small class="field-error">{{ error }}</small>
+                {% endfor %}
+            </label>
+
+            <label>
+                手機
+                <input
+                    type="text"
+                    name="phone"
+                    value="{{ form.phone.value|default:'' }}"
+                    placeholder="09xxxxxxxx"
+                    autocomplete="tel"
+                >
+                {% for error in form.phone.errors %}
+                    <small class="field-error">{{ error }}</small>
+                {% endfor %}
+            </label>
+
+            <button type="submit" class="btn btn-primary full">完成並登入</button>
+        </form>
+
+        <p class="form-footer">
+            已有 Email 密碼帳號也沒關係，系統會幫你把這個 LINE 綁定到同一個會員帳號。
+        </p>
+    </div>
+</section>
+{% endblock %}

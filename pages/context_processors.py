@@ -21,3 +21,16 @@ def social_contact_links(request):
         "facebook_messenger_url_global": facebook_messenger_url,
         "facebook_messenger_direct_enabled": facebook_messenger_url != facebook_page_url,
     }
+
+
+def social_login_status(request):
+    return {
+        "google_login_enabled_global": bool(
+            getattr(settings, "GOOGLE_OAUTH_CLIENT_ID", "")
+            and getattr(settings, "GOOGLE_OAUTH_CLIENT_SECRET", "")
+        ),
+        "line_login_enabled_global": bool(
+            getattr(settings, "LINE_LOGIN_CHANNEL_ID", "")
+            and getattr(settings, "LINE_LOGIN_CHANNEL_SECRET", "")
+        ),
+    }

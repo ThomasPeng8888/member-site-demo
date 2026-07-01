@@ -67,3 +67,30 @@ class MemberSignUpForm(UserCreationForm):
                 note="加入嘎比嘎比孔雀魚會員中心自動獲得 100 點。",
             )
         return user
+
+class SocialEmailCompleteForm(forms.Form):
+    first_name = forms.CharField(
+        label="姓名",
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "請輸入姓名"}),
+    )
+    email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(attrs={"placeholder": "you@example.com"}),
+    )
+    phone = forms.CharField(
+        label="手機",
+        max_length=30,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "09xxxxxxxx"}),
+    )
+
+    def clean_email(self):
+        return self.cleaned_data["email"].strip().lower()
+
+    def clean_first_name(self):
+        return self.cleaned_data.get("first_name", "").strip()
+
+    def clean_phone(self):
+        return self.cleaned_data.get("phone", "").strip()

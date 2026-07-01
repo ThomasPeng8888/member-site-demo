@@ -11,6 +11,10 @@
         <h1>會員登入</h1>
         <p class="muted">登入後可以查看點數、抽獎獎品與活動紀錄。</p>
 
+        {% include "pages/partials/social_login_buttons.html" with next=next %}
+
+        <div class="auth-divider"><span>或使用 Email 密碼登入</span></div>
+
         {% if form.errors %}
             <div class="alert">
                 Email 或密碼不正確，請再確認一次。

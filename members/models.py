@@ -66,6 +66,21 @@ class MemberProfile(models.Model):
         default=True,
         verbose_name="啟用 LINE 通知",
     )
+    google_sub = models.CharField(
+        max_length=255,
+        blank=True,
+        db_index=True,
+        verbose_name="Google 帳號識別碼",
+    )
+    google_email = models.EmailField(
+        blank=True,
+        verbose_name="Google Email",
+    )
+    google_bound_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Google 綁定時間",
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name="建立時間",
@@ -82,6 +97,11 @@ class MemberProfile(models.Model):
                 condition=~Q(line_user_id=""),
                 name="unique_non_empty_line_user_id",
             ),
+            models.UniqueConstraint(
+                fields=["google_sub"],
+                condition=~Q(google_sub=""),
+                name="unique_non_empty_google_sub",
+            ),
         ]
         verbose_name = "會員資料"
         verbose_name_plural = "會員資料"
@@ -92,3 +112,7 @@ class MemberProfile(models.Model):
     @property
     def is_line_bound(self):
         return bool(self.line_user_id)
+
+    @property
+    def is_google_bound(self):
+        return bool(self.google_sub)

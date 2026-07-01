@@ -101,6 +101,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'members.context_processors.staff_tools',
                 'pages.context_processors.social_contact_links',
+                'pages.context_processors.social_login_status',
             ],
         },
     },
@@ -213,6 +214,10 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Public site URL used for LINE Login callback and LINE message links.
 # Example on Render: https://member-site-demo.onrender.com
 SITE_URL = os.getenv("SITE_URL", "").rstrip("/")
+
+# Google Login settings. Keep secrets in Render Environment Variables.
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "")
 
 # LINE Login / Messaging API settings. Keep secrets in Render Environment Variables.
 LINE_LOGIN_CHANNEL_ID = os.getenv("LINE_LOGIN_CHANNEL_ID", "")
